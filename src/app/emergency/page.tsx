@@ -1,4 +1,5 @@
 import { EmptyState } from "@/components/feedback/empty-state";
+import { BackToSafety } from "@/components/layout/back-to-safety";
 import { PageFrame } from "@/components/layout/page-frame";
 import { ReportForm } from "@/components/emergency/report-form";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +12,7 @@ export default async function EmergencyPage() {
   return (
     <PageFrame pathname="/emergency">
       <div className="flex flex-col gap-8">
+        <BackToSafety />
         <ReportForm defaultCounty={DEMO_COUNTY} />
 
         <section className="flex flex-col gap-4">

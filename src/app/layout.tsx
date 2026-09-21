@@ -1,9 +1,11 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import { LowBandwidthProvider } from "@/components/providers/low-bandwidth-provider";
+import { ELMA_SESSION_COOKIE, isActiveDemoSession } from "@/lib/auth/demo-session";
 import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -37,12 +39,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const signedIn = isActiveDemoSession(cookies().get(ELMA_SESSION_COOKIE)?.value);
+
   return (
     <html lang="en" className={cn(jakarta.variable)}>
       <body className="min-h-screen font-sans font-medium">
         <LowBandwidthProvider>
           <RegisterServiceWorker />
-          <AppShell>{children}</AppShell>
+          <AppShell signedIn={signedIn}>{children}</AppShell>
         </LowBandwidthProvider>
       </body>
     </html>

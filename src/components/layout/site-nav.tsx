@@ -1,6 +1,6 @@
 "use client";
 
-import { navGroups, type NavLink } from "@/lib/content/site";
+import { navGroups, type NavGroup, type NavLink } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,11 +48,13 @@ export function SiteNav({
   className,
   dark = false,
   orientation = "vertical",
+  groups = navGroups,
 }: {
   onNavigate?: () => void;
   className?: string;
   dark?: boolean;
   orientation?: "vertical" | "horizontal";
+  groups?: NavGroup[];
 }) {
   if (orientation === "horizontal") {
     return (
@@ -63,7 +65,7 @@ export function SiteNav({
         )}
         aria-label="Main navigation"
       >
-        {navGroups.map((group, groupIndex) => (
+        {groups.map((group, groupIndex) => (
           <div key={group.id} className="flex shrink-0 items-center gap-0.5">
             {groupIndex > 0 ? (
               <span
@@ -91,7 +93,7 @@ export function SiteNav({
 
   return (
     <nav className={cn("flex flex-col gap-6", className)} aria-label="Site sections">
-      {navGroups.map((group) => (
+      {groups.map((group) => (
         <div key={group.id} className="flex flex-col gap-1.5">
           <p
             className={cn(

@@ -1,10 +1,11 @@
 "use client";
 
+import { LogoutButton } from "@/components/layout/logout-button";
 import { PageTopBar } from "@/components/layout/page-top-bar";
 import { SiteNav } from "@/components/layout/site-nav";
 import { useLowBandwidth } from "@/components/providers/low-bandwidth-provider";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -12,14 +13,39 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { portalNavLinks, publicNavLinks, type NavGroup } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
-import { Menu, Search, WifiOff } from "lucide-react";
+import { Menu, WifiOff } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useMemo, useState } from "react";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  signedIn,
+}: {
+  children: React.ReactNode;
+  signedIn: boolean;
+}) {
   const { lowBandwidth, toggle } = useLowBandwidth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const navGroups: NavGroup[] = useMemo(
+    () => [
+      {
+        id: "main",
+        title: "Menu",
+        subtitle: "",
+        items: signedIn ? portalNavLinks : publicNavLinks,
+      },
+    ],
+    [signedIn],
+  );
+
+  const hidePageTitle =
+    pathname === "/" || pathname === "/login" || pathname.startsWith("/counties/");
+  const isMarketing = !signedIn && (pathname === "/" || pathname === "/about");
 
   return (
     <div className="min-h-screen bg-elma-canvas p-3 sm:p-4 lg:p-5">
@@ -33,6 +59,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </span>
             </Link>
             <div className="flex items-center gap-2 lg:hidden">
+              {!signedIn ? (
+                <Link
+                  href="/login?next=/counties"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "rounded-full bg-white px-3 text-xs font-bold text-elma-sidebar",
+                  )}
+                >
+                  Sign in
+                </Link>
+              ) : null}
               <Button
                 type="button"
                 variant="outline"
@@ -69,28 +106,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <SheetTitle className="font-extrabold tracking-widest text-white">Menu</SheetTitle>
                   </SheetHeader>
                   <div className="flex-1 overflow-y-auto p-4">
-                    <SiteNav dark orientation="vertical" onNavigate={() => setMenuOpen(false)} />
+                    <SiteNav
+                      dark
+                      orientation="vertical"
+                      groups={navGroups}
+                      onNavigate={() => setMenuOpen(false)}
+                    />
+                    {signedIn ? (
+                      <div className="mt-4 border-t border-white/10 pt-4">
+                        <LogoutButton dark />
+                      </div>
+                    ) : null}
                   </div>
                 </SheetContent>
               </Sheet>
             </div>
           </div>
 
-          <SiteNav dark orientation="horizontal" className="hidden lg:flex" />
+          <SiteNav dark orientation="horizontal" groups={navGroups} className="hidden lg:flex" />
 
           <div className="hidden items-center gap-2 lg:flex lg:shrink-0">
-            <div className="relative w-44 xl:w-52">
-              <Search
-                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/50"
-                aria-hidden
-              />
-              <Input
-                type="search"
-                placeholder="Search…"
-                className="h-10 rounded-full border-0 bg-white/15 pl-9 text-sm text-white placeholder:text-white/50 focus-visible:bg-white/20 focus-visible:ring-white/30"
-                aria-label="Search"
-              />
-            </div>
             <Button
               type="button"
               variant="outline"
@@ -104,11 +139,40 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <WifiOff data-icon="inline-start" />
               Lite
             </Button>
+            {signedIn ? (
+              <>
+                <Link
+                  href="/counties"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "h-10 rounded-full bg-white font-bold text-elma-sidebar hover:bg-white/90",
+                  )}
+                >
+                  Counties
+                </Link>
+                <LogoutButton dark />
+              </>
+            ) : (
+              <Link
+                href="/login?next=/counties"
+                className={cn(
+                  buttonVariants({ size: "sm", variant: "outline" }),
+                  "h-10 rounded-full border-white/30 bg-white/10 font-bold text-white hover:bg-white/20",
+                )}
+              >
+                Sign in
+              </Link>
+            )}
           </div>
         </header>
 
-        <div className="elma-dashboard-panel flex flex-1 flex-col gap-6 rounded-[1.75rem] bg-elma-canvas/80 p-4 sm:p-6 lg:p-8">
-          <PageTopBar showSearch={false} />
+        <div
+          className={cn(
+            "elma-dashboard-panel flex flex-1 flex-col gap-6 rounded-[1.75rem] p-4 sm:p-6 lg:p-8",
+            isMarketing ? "bg-transparent" : "bg-elma-canvas/80",
+          )}
+        >
+          {!hidePageTitle ? <PageTopBar showSearch={false} /> : null}
           <main className="flex flex-1 flex-col">{children}</main>
         </div>
       </div>

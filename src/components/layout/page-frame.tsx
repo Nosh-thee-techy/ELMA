@@ -7,28 +7,32 @@ type PageFrameProps = {
   children: React.ReactNode;
   className?: string;
   showAudience?: boolean;
+  showIntro?: boolean;
 };
 
 export function PageFrame({
   pathname,
   children,
   className,
-  showAudience = true,
+  showAudience = false,
+  showIntro = false,
 }: PageFrameProps) {
   const meta = metaForPath(pathname);
   const audiences = audiencesForPage(pathname);
 
   return (
     <div className={cn("flex flex-col gap-5", className)}>
-      <section className="elma-card p-6 sm:p-8">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/80">
-          What we are building
-        </p>
-        <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-muted-foreground">
-          {meta.building}
-        </p>
-        <p className="mt-4 text-lg font-semibold text-foreground">{meta.summary}</p>
-      </section>
+      {showIntro ? (
+        <section className="elma-card p-6 sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/80">
+            What we are building
+          </p>
+          <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-muted-foreground">
+            {meta.building}
+          </p>
+          <p className="mt-4 text-lg font-semibold text-foreground">{meta.summary}</p>
+        </section>
+      ) : null}
 
       {showAudience && audiences.length > 0 ? (
         <AudiencePanel audiences={audiences} />

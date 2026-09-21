@@ -6,8 +6,19 @@ import { DataSourcesPanel } from "@/components/transparency/data-sources-panel";
 import { ProjectCard } from "@/components/transparency/project-card";
 import { getMitigationProjects } from "@/lib/data/repository";
 import { formatKes } from "@/lib/utils";
-export default async function TransparencyPage() {
-  const mitigationProjects = await getMitigationProjects();
+type Props = {
+  searchParams?: { county?: string; ward?: string };
+};
+
+export default async function TransparencyPage({ searchParams }: Props) {
+  const allProjects = await getMitigationProjects();
+  const countyFilter = searchParams?.county?.trim();
+  const wardFilter = searchParams?.ward?.trim();
+  const mitigationProjects = allProjects.filter((p) => {
+    if (countyFilter && p.county !== countyFilter) return false;
+    if (wardFilter && p.ward !== wardFilter) return false;
+    return true;
+  });
   const totalBudget = mitigationProjects.reduce((s, p) => s + p.budgetKes, 0);
   const mismatches = mitigationProjects.filter(
     (p) => p.paperStatus === "complete" && p.fieldStatus !== "confirmed",
@@ -29,6 +40,23 @@ export default async function TransparencyPage() {
   return (
     <PageFrame pathname="/transparency">
       <div className="flex flex-col gap-8">
+        {countyFilter || wardFilter ? (
+          <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm font-semibold text-foreground">
+            Showing{" "}
+            {wardFilter ? (
+              <>
+                <span className="text-primary">{wardFilter}</span>
+                {countyFilter ? ` · ${countyFilter}` : ""}
+              </>
+            ) : (
+              <span className="text-primary">{countyFilter}</span>
+            )}{" "}
+            —{" "}
+            <a href="/transparency" className="underline underline-offset-2">
+              clear filter
+            </a>
+          </p>
+        ) : null}
         <div className="grid gap-4 sm:grid-cols-2">
           <StatCard label="Total allocated (demo)" value={formatKes(totalBudget)} />
           <StatCard

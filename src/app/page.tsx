@@ -1,5 +1,5 @@
-import { LandingPage } from "@/components/landing/landing-page";
+import { PublicLanding } from "@/components/landing/public-landing";
 
 export default function HomePage() {
-  return <LandingPage />;
+  return <PublicLanding />;
 }

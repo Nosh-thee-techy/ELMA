@@ -3,7 +3,7 @@ import { PageFrame } from "@/components/layout/page-frame";
 
 export default function AboutPage() {
   return (
-    <PageFrame pathname="/about">
+    <PageFrame pathname="/about" showIntro showAudience>
       <VisionSections />
     </PageFrame>
   );

@@ -5,8 +5,8 @@ import {
   CloudRain,
   FileText,
   Home,
+  MapPin,
   Radio,
-  Shield,
   ShieldCheck,
 } from "lucide-react";
 
@@ -24,82 +24,84 @@ export type NavGroup = {
   items: NavLink[];
 };
 
+/** Public site — before sign-in */
+export const publicNavLinks: NavLink[] = [
+  {
+    href: "/",
+    label: "Home",
+    description: "What ELMA is and how it works",
+    icon: Home,
+  },
+  {
+    href: "/about",
+    label: "About",
+    description: "Mission, tracks, and audiences",
+    icon: BookOpen,
+  },
+];
+
+/** Signed-in portal */
+export const portalNavLinks: NavLink[] = [
+  {
+    href: "/counties",
+    label: "Counties",
+    description: "Kenya map and county fund transparency",
+    icon: MapPin,
+  },
+  {
+    href: "/safety",
+    label: "Safety",
+    description: "Reports, alerts, shelters",
+    icon: AlertTriangle,
+  },
+  {
+    href: "/about",
+    label: "About",
+    description: "Why ELMA exists",
+    icon: BookOpen,
+  },
+];
+
 export const navGroups: NavGroup[] = [
   {
-    id: "start",
-    title: "Start here",
-    subtitle: "What ELMA is and who it serves",
-    items: [
-      {
-        href: "/",
-        label: "Overview",
-        description: "Platform summary and quick links",
-        icon: Home,
-      },
-      {
-        href: "/about",
-        label: "Mission & audience",
-        description: "Problem, tracks, and people we build for",
-        icon: BookOpen,
-      },
-    ],
+    id: "main",
+    title: "Navigate",
+    subtitle: "",
+    items: publicNavLinks,
+  },
+];
+
+/** Linked from dashboard cards and assignment pages — not in the top bar */
+export const secondaryNavLinks: NavLink[] = [
+  {
+    href: "/policy",
+    label: "Policy plain language",
+    description: "Turn dense PDF rules into actionable steps",
+    icon: FileText,
   },
   {
-    id: "track2",
-    title: "Track 2 · Before floods",
-    subtitle: "County transparency & accountability",
-    items: [
-      {
-        href: "/transparency",
-        label: "Mitigation projects",
-        description: "Ward budgets, contractors, paper vs field",
-        icon: Shield,
-      },
-      {
-        href: "/policy",
-        label: "Policy in plain language",
-        description: "Turn dense PDF rules into actionable steps",
-        icon: FileText,
-      },
-    ],
+    href: "/emergency",
+    label: "Report emergency",
+    description: "Structured reports when hotlines backlog",
+    icon: AlertTriangle,
   },
   {
-    id: "track3",
-    title: "Track 3 · During floods",
-    subtitle: "Community safety & response",
-    items: [
-      {
-        href: "/emergency",
-        label: "Report an emergency",
-        description: "Structured reports when hotlines backlog",
-        icon: AlertTriangle,
-      },
-      {
-        href: "/alerts",
-        label: "Alerts feed",
-        description: "Verified updates vs social-media rumors",
-        icon: Radio,
-      },
-      {
-        href: "/shelters",
-        label: "Shelters & capacity",
-        description: "Which halls are open and have space",
-        icon: CloudRain,
-      },
-    ],
+    href: "/alerts",
+    label: "Alerts feed",
+    description: "Verified updates vs social-media rumors",
+    icon: Radio,
   },
   {
-    id: "ops",
-    title: "Ward & partner tools",
-    subtitle: "For committees and moderators",
-    items: [
-      {
-        href: "/moderate",
-        label: "Alert moderation",
-        description: "Verify or flag community alerts",
-        icon: ShieldCheck,
-      },
-    ],
+    href: "/shelters",
+    label: "Shelters",
+    description: "Which halls are open and have space",
+    icon: CloudRain,
+  },
+  {
+    href: "/moderate",
+    label: "Alert moderation",
+    description: "Verify or flag community alerts",
+    icon: ShieldCheck,
   },
 ];
 
@@ -162,12 +164,30 @@ export type PageMeta = {
 
 export const pageMeta: Record<string, PageMeta> = {
   "/": {
-    title: "Platform overview",
-    summary:
-      "Close the information gap: ward allocations before floods, multi-channel safety during floods.",
+    title: "ELMA",
+    summary: "Transparency and help for El Niño, floods, and drought — start here, then sign in to explore counties.",
     building:
       "Part 1 shows how public resources are allocated and moving (budgets, tenders, shelters). Part 2 reaches people on USSD, SMS, voice, and WhatsApp when networks and trust break down.",
     audienceIds: ["residents", "committees", "advocates", "low-connectivity"],
+  },
+  "/counties": {
+    title: "Choose your county",
+    summary: "Interactive Kenya map — filter or tap to open fund releases and tenders.",
+    building: "County-level transparency after sign-in.",
+    audienceIds: ["residents", "advocates"],
+  },
+  "/login": {
+    title: "Sign in",
+    summary: "Demo access to the county map and transparency portal.",
+    building: "Production will use real accounts; PoC uses one-click demo sign-in.",
+    audienceIds: ["residents"],
+  },
+  "/safety": {
+    title: "Safety hub",
+    summary: "During floods: report danger, read verified alerts, find shelter space.",
+    building:
+      "One entry point for Track 3 — web forms today; USSD, SMS, voice, and WhatsApp on the roadmap.",
+    audienceIds: ["residents", "committees", "low-connectivity"],
   },
   "/about": {
     title: "Mission & who we serve",
@@ -178,8 +198,8 @@ export const pageMeta: Record<string, PageMeta> = {
     audienceIds: ["residents", "committees", "advocates", "low-connectivity"],
   },
   "/transparency": {
-    title: "Ward mitigation transparency",
-    summary: "See what was allocated for your ward and whether work is actually moving.",
+    title: "Ward assignments",
+    summary: "Project-level detail: budgets, contractors, and paper vs field status.",
     building:
       "Ward resource map from PPIP, COB, county ADPs, and NDMA-style feeds — budgets, contractors, completion, shelters, with tamper-evident records planned on-chain.",
     audienceIds: ["residents", "advocates"],

@@ -1,5 +1,6 @@
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ElmaMap } from "@/components/maps/elma-map";
+import { BackToSafety } from "@/components/layout/back-to-safety";
 import { PageFrame } from "@/components/layout/page-frame";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getShelters } from "@/lib/data/repository";
@@ -17,6 +18,7 @@ export default async function SheltersPage() {
   return (
     <PageFrame pathname="/shelters">
       <div className="flex flex-col gap-8">
+        <BackToSafety />
         <ElmaMap points={mapPoints} initialZoom={11.5} />
 
         {shelters.length === 0 ? (
