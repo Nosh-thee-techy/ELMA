@@ -19,7 +19,12 @@ const steps = [
   },
 ];
 
-const portraitTints = ["from-[#5B4B8A] to-[#8B7BC7]", "from-[#2D6A4F] to-[#52B788]", "from-[#BC4749] to-[#E07A5F]", "from-[#1D3557] to-[#457B9D]"];
+const portraitTints = [
+  "from-[#0F172A] to-[#334155]",
+  "from-[#059669] to-[#0D9488]",
+  "from-[#0D9488] to-[#14B8A6]",
+  "from-[#D97706] to-[#F59E0B]",
+];
 
 export function PublicLanding() {
   return (
@@ -57,7 +62,7 @@ export function PublicLanding() {
               </Link>
             </div>
           </div>
-          <div className="relative min-h-[280px] bg-[#eef0ff] p-6 sm:p-8 lg:min-h-0">
+          <div className="relative min-h-[280px] bg-slate-100 p-6 sm:p-8 lg:min-h-0">
             <p className="mb-4 flex items-center gap-2 text-sm font-bold text-primary">
               <Users className="size-4" aria-hidden />
               Built for people on the ground
@@ -100,7 +105,7 @@ export function PublicLanding() {
         ))}
       </section>
 
-      <section className="elma-sidebar elma-card border-0 p-8 text-white sm:p-10">
+      <section className="elma-header elma-card border-0 p-8 text-white sm:p-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xl">
             <p className="flex items-center gap-2 text-sm font-bold text-white/80">
@@ -115,7 +120,7 @@ export function PublicLanding() {
             href="/login?next=/counties"
             className={cn(
               buttonVariants({ size: "lg" }),
-              "rounded-full bg-white font-bold text-elma-sidebar hover:bg-white/90",
+              "rounded-full bg-emerald-500 font-bold text-white hover:bg-emerald-400",
             )}
           >
             <MapPin data-icon="inline-start" />

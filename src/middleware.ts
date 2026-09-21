@@ -18,5 +18,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/counties/:path*"],
+  matcher: ["/counties/:path*", "/releases", "/tenders"],
 };

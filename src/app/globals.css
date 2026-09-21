@@ -36,6 +36,8 @@
   --color-elma-sidebar: var(--elma-sidebar);
   --color-elma-canvas: var(--elma-canvas);
   --color-elma-panel: var(--elma-panel);
+  --color-elma-navy: var(--elma-navy);
+  --color-elma-teal: var(--elma-teal);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -64,37 +66,41 @@ html.elma-lite .elma-map {
 }
 
 :root {
-  --elma-forest: #15803d;
-  --elma-forest-deep: #052e16;
-  --elma-sidebar: #5b4b8a;
-  --elma-sidebar-deep: #463a6e;
-  --elma-canvas: #e8e6f2;
-  --elma-panel: #f5f4fa;
-  --elma-clay: #ea580c;
-  --elma-clay-deep: #c2410c;
-  --elma-sand: #fff7ed;
-  --elma-charcoal: #1e1b2e;
+  --elma-navy: #0f172a;
+  --elma-navy-soft: #1e293b;
+  --elma-teal: #0d9488;
+  --elma-emerald: #059669;
+  --elma-forest: #059669;
+  --elma-forest-deep: #064e3b;
+  --elma-sidebar: #0f172a;
+  --elma-sidebar-deep: #020617;
+  --elma-canvas: #f1f5f9;
+  --elma-panel: #ffffff;
+  --elma-clay: #d97706;
+  --elma-clay-deep: #b45309;
+  --elma-sand: #fffbeb;
+  --elma-charcoal: #0f172a;
 
   --background: var(--elma-canvas);
-  --foreground: #1e1b2e;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #1e1b2e;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #1e1b2e;
-  --primary: #5b4b8a;
+  --popover-foreground: #0f172a;
+  --primary: #059669;
   --primary-foreground: #ffffff;
-  --secondary: #ebe8f5;
-  --secondary-foreground: #463a6e;
-  --muted: #eceaf4;
-  --muted-foreground: #6b6580;
-  --accent: #e8f5e9;
-  --accent-foreground: #14532d;
+  --secondary: #ecfdf5;
+  --secondary-foreground: #065f46;
+  --muted: #e2e8f0;
+  --muted-foreground: #64748b;
+  --accent: #ccfbf1;
+  --accent-foreground: #0f766e;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e2dfea;
-  --input: #e2dfea;
-  --ring: #5b4b8a;
-  --radius: 1.25rem;
+  --border: #cbd5e1;
+  --input: #cbd5e1;
+  --ring: #0d9488;
+  --radius: 1rem;
 }
 
 body {
@@ -103,8 +109,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.elma-header {
+  background: linear-gradient(180deg, var(--elma-navy) 0%, var(--elma-navy-soft) 100%);
+}
+
 .elma-sidebar {
-  background: linear-gradient(165deg, var(--elma-sidebar) 0%, var(--elma-sidebar-deep) 100%);
+  background: linear-gradient(180deg, var(--elma-navy) 0%, var(--elma-navy-soft) 100%);
 }
 
 .elma-sidebar-art {

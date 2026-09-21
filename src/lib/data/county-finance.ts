@@ -244,3 +244,25 @@ export function procurementStages(project: MitigationProject): {
 export function countyNameFromSlug(slug: string): string | undefined {
   return countyBySlug(slug)?.name;
 }
+
+export type CountyCardSummary = {
+  slug: string;
+  name: string;
+  lat: number;
+  lng: number;
+  allocatedKes: number;
+  hasDemoData: boolean;
+};
+
+export function buildCountyCardSummaries(
+  counties: { slug: string; name: string; hasDemoData: boolean; lat: number; lng: number }[],
+): CountyCardSummary[] {
+  return counties.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    lat: c.lat,
+    lng: c.lng,
+    hasDemoData: c.hasDemoData,
+    allocatedKes: ENVELOPES[c.name]?.el_nino?.countyReceivedKes ?? 0,
+  }));
+}

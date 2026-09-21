@@ -1,6 +1,7 @@
 "use client";
 
 import { FundFlowPanel } from "@/components/counties/fund-flow-panel";
+import { FundFlowPipeline } from "@/components/counties/fund-flow-pipeline";
 import { TenderPipelineCard } from "@/components/counties/tender-pipeline-card";
 import type { CountyPortalData, HazardPeriod } from "@/lib/data/county-finance";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,8 @@ export function CountyPortalView({ data }: { data: CountyPortalData }) {
 
   return (
     <div className="flex flex-col gap-8">
+      <FundFlowPipeline compact />
+
       <div className="flex flex-wrap gap-2">
         {PERIOD_ORDER.map((key) => {
           const label = data.periods.find((p) => p.period === key)?.label ?? key;
@@ -41,9 +44,10 @@ export function CountyPortalView({ data }: { data: CountyPortalData }) {
       </div>
 
       {!data.hasDemoData ? (
-        <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-950">
-          This county is on the map for navigation. Full fund and tender demo data is available for
-          Kisumu, Nairobi, Garissa, and Kilifi.
+        <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
+          This county profile is not fully published yet. Select a{" "}
+          <span className="font-bold text-emerald-700">Full data</span> county on the map for a
+          complete releases and tenders demo.
         </p>
       ) : null}
 

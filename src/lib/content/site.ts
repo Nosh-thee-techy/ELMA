@@ -4,10 +4,12 @@ import {
   BookOpen,
   CloudRain,
   FileText,
+  Hammer,
   Home,
   MapPin,
   Radio,
   ShieldCheck,
+  Wallet,
 } from "lucide-react";
 
 export type NavLink = {
@@ -45,20 +47,26 @@ export const portalNavLinks: NavLink[] = [
   {
     href: "/counties",
     label: "Counties",
-    description: "Kenya map and county fund transparency",
+    description: "Kenya map and county profiles",
     icon: MapPin,
   },
   {
-    href: "/safety",
-    label: "Safety",
-    description: "Reports, alerts, shelters",
-    icon: AlertTriangle,
+    href: "/releases",
+    label: "Releases",
+    description: "Fund releases by county",
+    icon: Wallet,
   },
   {
-    href: "/about",
-    label: "About",
-    description: "Why ELMA exists",
-    icon: BookOpen,
+    href: "/tenders",
+    label: "Tenders",
+    description: "Contracts and field verification",
+    icon: Hammer,
+  },
+  {
+    href: "/safety",
+    label: "Help",
+    description: "Emergency reports, alerts, shelters",
+    icon: AlertTriangle,
   },
 ];
 
@@ -169,6 +177,18 @@ export const pageMeta: Record<string, PageMeta> = {
     building:
       "Part 1 shows how public resources are allocated and moving (budgets, tenders, shelters). Part 2 reaches people on USSD, SMS, voice, and WhatsApp when networks and trust break down.",
     audienceIds: ["residents", "committees", "advocates", "low-connectivity"],
+  },
+  "/releases": {
+    title: "Fund releases",
+    summary: "What reached each county for the OND window (demo).",
+    building: "National and county treasury releases.",
+    audienceIds: ["residents", "advocates"],
+  },
+  "/tenders": {
+    title: "Tenders",
+    summary: "Ward contracts, spend, and field verification.",
+    building: "Procurement transparency across demo counties.",
+    audienceIds: ["residents", "advocates"],
   },
   "/counties": {
     title: "Choose your county",

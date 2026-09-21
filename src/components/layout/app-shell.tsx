@@ -1,5 +1,6 @@
 "use client";
 
+import { ElmaLogo } from "@/components/brand/elma-logo";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { PageTopBar } from "@/components/layout/page-top-bar";
 import { SiteNav } from "@/components/layout/site-nav";
@@ -44,19 +45,20 @@ export function AppShell({
   );
 
   const hidePageTitle =
-    pathname === "/" || pathname === "/login" || pathname.startsWith("/counties/");
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname.startsWith("/counties") ||
+    pathname === "/releases" ||
+    pathname === "/tenders";
   const isMarketing = !signedIn && (pathname === "/" || pathname === "/about");
 
   return (
     <div className="min-h-screen bg-elma-canvas p-3 sm:p-4 lg:p-5">
       <div className="mx-auto flex max-w-[1600px] flex-col gap-4 lg:gap-5">
-        <header className="elma-sidebar sticky top-3 z-40 flex flex-col gap-3 rounded-[1.75rem] px-3 py-3 shadow-lg sm:px-4 lg:top-5 lg:flex-row lg:items-center lg:gap-4 lg:py-2.5">
+        <header className="elma-header sticky top-3 z-40 flex flex-col gap-3 rounded-2xl px-3 py-3 shadow-lg sm:px-4 lg:top-5 lg:flex-row lg:items-center lg:gap-4 lg:py-2.5">
           <div className="flex items-center justify-between gap-3 lg:shrink-0">
-            <Link href="/" className="flex flex-col px-2 text-white">
-              <span className="text-lg font-extrabold tracking-[0.25em] sm:text-xl">ELMA</span>
-              <span className="hidden text-[10px] font-semibold text-white/60 sm:block">
-                Monitoring & Accountability
-              </span>
+            <Link href="/" className="px-1">
+              <ElmaLogo variant="light" />
             </Link>
             <div className="flex items-center gap-2 lg:hidden">
               {!signedIn ? (
@@ -64,7 +66,7 @@ export function AppShell({
                   href="/login?next=/counties"
                   className={cn(
                     buttonVariants({ size: "sm" }),
-                    "rounded-full bg-white px-3 text-xs font-bold text-elma-sidebar",
+                    "rounded-full bg-emerald-500 px-3 text-xs font-bold text-white hover:bg-emerald-400",
                   )}
                 >
                   Sign in
@@ -76,7 +78,7 @@ export function AppShell({
                 size="icon-lg"
                 className={cn(
                   "min-h-10 min-w-10 rounded-full border-white/25 bg-white/10 text-white hover:bg-white/20",
-                  lowBandwidth && "border-white bg-white text-elma-sidebar",
+                  lowBandwidth && "border-white bg-white text-elma-navy",
                 )}
                 onClick={toggle}
                 aria-pressed={lowBandwidth}
@@ -131,7 +133,7 @@ export function AppShell({
               variant="outline"
               className={cn(
                 "h-10 rounded-full border-white/25 bg-white/10 px-4 font-semibold text-white hover:bg-white/20",
-                lowBandwidth && "border-white bg-white text-elma-sidebar",
+                lowBandwidth && "border-white bg-white text-elma-navy",
               )}
               onClick={toggle}
               aria-pressed={lowBandwidth}
@@ -140,18 +142,7 @@ export function AppShell({
               Lite
             </Button>
             {signedIn ? (
-              <>
-                <Link
-                  href="/counties"
-                  className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "h-10 rounded-full bg-white font-bold text-elma-sidebar hover:bg-white/90",
-                  )}
-                >
-                  Counties
-                </Link>
-                <LogoutButton dark />
-              </>
+              <LogoutButton dark />
             ) : (
               <Link
                 href="/login?next=/counties"
