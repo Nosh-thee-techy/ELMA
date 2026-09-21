@@ -71,6 +71,8 @@ export interface CommunityAlert {
   evacuationCenters?: EvacuationCenterRef[];
 }
 
+export type ShelterOperationalStatus = "OPEN" | "NEAR_CAPACITY" | "FULL" | "CLOSED";
+
 export interface Shelter {
   id: string;
   name: string;
@@ -82,7 +84,57 @@ export interface Shelter {
   lat: number;
   lng: number;
   open: boolean;
+  status?: ShelterOperationalStatus;
+  resourceNeeds?: string[];
+  mediaProofUrls?: string[];
   contactPerson?: string;
   hotline?: string;
   dataSource?: DataSourceId;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
+export type FundCategory =
+  | "drainage"
+  | "shelter_aid"
+  | "emergency_supplies"
+  | "drought_relief"
+  | "other";
+
+export interface FundDisbursal {
+  id: string;
+  title: string;
+  county: string;
+  ward: string;
+  category: FundCategory;
+  totalAllocatedKes: number;
+  totalDisbursedKes: number;
+  projectId?: string;
+}
+
+export interface ProjectProof {
+  id: string;
+  disbursalId: string;
+  projectId?: string;
+  contractorName: string;
+  tenderId: string;
+  gazetteNoticeUrl?: string;
+  bankReceiptUrl?: string;
+  mediaProofUrls: string[];
+  verifiedAt?: string;
+  verifiedBy?: string;
+  caption?: string;
+  lat?: number;
+  lng?: number;
+}
+
+export interface ShelterStatusLog {
+  id: string;
+  shelterId: string;
+  currentOccupancy: number;
+  maxCapacity: number;
+  status: ShelterOperationalStatus;
+  resourceNeeds: string[];
+  updatedBy: string;
+  updatedAt: string;
 }

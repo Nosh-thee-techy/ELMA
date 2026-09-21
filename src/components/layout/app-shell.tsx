@@ -3,7 +3,9 @@
 import { ElmaLogo } from "@/components/brand/elma-logo";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { PageTopBar } from "@/components/layout/page-top-bar";
+import { PublicCountySearch } from "@/components/layout/public-county-search";
 import { SiteNav } from "@/components/layout/site-nav";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useLowBandwidth } from "@/components/providers/low-bandwidth-provider";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Button } from "@/components/ui/button";
@@ -14,7 +16,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { portalNavLinks, publicNavLinks, type NavGroup } from "@/lib/content/site";
+import type { SessionProfile } from "@/lib/auth/session";
+import { publicNavLinks, type NavGroup } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
 import { Menu, WifiOff } from "lucide-react";
 import Link from "next/link";
@@ -23,37 +26,40 @@ import { useMemo, useState } from "react";
 
 export function AppShell({
   children,
-  signedIn,
+  sessionActive,
+  profile,
 }: {
   children: React.ReactNode;
-  signedIn: boolean;
+  sessionActive: boolean;
+  profile: SessionProfile | null;
 }) {
   const { lowBandwidth, toggle } = useLowBandwidth();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  const isResponder =
+    sessionActive && profile && (profile.role === "RESPONDER" || profile.role === "ADMIN");
+
   const navGroups: NavGroup[] = useMemo(
-    () => [
-      {
-        id: "main",
-        title: "Menu",
-        subtitle: "",
-        items: signedIn ? portalNavLinks : publicNavLinks,
-      },
-    ],
-    [signedIn],
+    () => [{ id: "main", title: "Menu", subtitle: "", items: publicNavLinks }],
+    [],
   );
+
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/responder/login")) {
+    return <>{children}</>;
+  }
 
   const hidePageTitle =
     pathname === "/" ||
     pathname === "/login" ||
     pathname.startsWith("/counties") ||
     pathname === "/releases" ||
-    pathname === "/tenders";
-  const isMarketing = !signedIn && (pathname === "/" || pathname === "/about");
+    pathname === "/tenders" ||
+    pathname === "/transparency";
+  const isMarketing = pathname === "/" || pathname === "/about";
 
   return (
-    <div className="min-h-screen bg-elma-canvas p-3 sm:p-4 lg:p-5">
+    <div className="min-h-screen bg-background p-3 sm:p-4 lg:p-5">
       <div className="mx-auto flex max-w-[1600px] flex-col gap-4 lg:gap-5">
         <header className="elma-header sticky top-3 z-40 flex flex-col gap-3 rounded-2xl px-3 py-3 shadow-lg sm:px-4 lg:top-5 lg:flex-row lg:items-center lg:gap-4 lg:py-2.5">
           <div className="flex items-center justify-between gap-3 lg:shrink-0">
@@ -61,17 +67,7 @@ export function AppShell({
               <ElmaLogo variant="light" />
             </Link>
             <div className="flex items-center gap-2 lg:hidden">
-              {!signedIn ? (
-                <Link
-                  href="/login?next=/counties"
-                  className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "rounded-full bg-emerald-500 px-3 text-xs font-bold text-white hover:bg-emerald-400",
-                  )}
-                >
-                  Sign in
-                </Link>
-              ) : null}
+              <ThemeToggle inverted />
               <Button
                 type="button"
                 variant="outline"
@@ -114,7 +110,7 @@ export function AppShell({
                       groups={navGroups}
                       onNavigate={() => setMenuOpen(false)}
                     />
-                    {signedIn ? (
+                    {isResponder ? (
                       <div className="mt-4 border-t border-white/10 pt-4">
                         <LogoutButton dark />
                       </div>
@@ -127,7 +123,9 @@ export function AppShell({
 
           <SiteNav dark orientation="horizontal" groups={navGroups} className="hidden lg:flex" />
 
-          <div className="hidden items-center gap-2 lg:flex lg:shrink-0">
+          <div className="hidden items-center gap-2 lg:flex lg:shrink-0 lg:justify-end">
+            <PublicCountySearch className="hidden xl:block" />
+            <ThemeToggle inverted />
             <Button
               type="button"
               variant="outline"
@@ -141,17 +139,28 @@ export function AppShell({
               <WifiOff data-icon="inline-start" />
               Lite
             </Button>
-            {signedIn ? (
-              <LogoutButton dark />
+            {isResponder ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "h-10 rounded-full bg-emerald-500 font-bold text-white hover:bg-emerald-400",
+                  )}
+                >
+                  Dashboard
+                </Link>
+                <LogoutButton dark />
+              </>
             ) : (
               <Link
-                href="/login?next=/counties"
+                href="/responder/login"
                 className={cn(
-                  buttonVariants({ size: "sm", variant: "outline" }),
-                  "h-10 rounded-full border-white/30 bg-white/10 font-bold text-white hover:bg-white/20",
+                  buttonVariants({ size: "sm" }),
+                  "h-10 rounded-full bg-white font-bold text-elma-navy hover:bg-white/90",
                 )}
               >
-                Sign in
+                First responder login
               </Link>
             )}
           </div>
@@ -159,8 +168,8 @@ export function AppShell({
 
         <div
           className={cn(
-            "elma-dashboard-panel flex flex-1 flex-col gap-6 rounded-[1.75rem] p-4 sm:p-6 lg:p-8",
-            isMarketing ? "bg-transparent" : "bg-elma-canvas/80",
+            "flex flex-1 flex-col gap-6 rounded-2xl p-4 sm:p-6 lg:p-8",
+            isMarketing ? "bg-transparent" : "bg-card/60 ring-1 ring-border/60",
           )}
         >
           {!hidePageTitle ? <PageTopBar showSearch={false} /> : null}

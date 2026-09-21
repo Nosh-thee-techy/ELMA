@@ -1,0 +1,80 @@
+import type { FundDisbursal, ProjectProof } from "@/lib/types";
+
+export const fundDisbursals: FundDisbursal[] = [
+  {
+    id: "disb-ksm-001",
+    title: "Nyalenda drainage & flood prep",
+    county: "Kisumu",
+    ward: "Nyalenda A",
+    category: "drainage",
+    totalAllocatedKes: 4_200_000,
+    totalDisbursedKes: 2_100_000,
+    projectId: "KSM-WARD-011-2026",
+  },
+  {
+    id: "disb-ksm-002",
+    title: "Kondele culvert emergency works",
+    county: "Kisumu",
+    ward: "Kondele",
+    category: "drainage",
+    totalAllocatedKes: 6_800_000,
+    totalDisbursedKes: 6_800_000,
+    projectId: "KSM-WARD-018-2026",
+  },
+  {
+    id: "disb-gar-001",
+    title: "Tana embankment reinforcement",
+    county: "Garissa",
+    ward: "Sankuri",
+    category: "emergency_supplies",
+    totalAllocatedKes: 12_000_000,
+    totalDisbursedKes: 4_500_000,
+    projectId: "GAR-FLOOD-003-2026",
+  },
+  {
+    id: "disb-nrb-001",
+    title: "Upper Savanna stormwater desilt",
+    county: "Nairobi",
+    ward: "Upper Savanna",
+    category: "drainage",
+    totalAllocatedKes: 4_500_000,
+    totalDisbursedKes: 3_000_000,
+    projectId: "NRB-WARD-042-2026",
+  },
+];
+
+export const projectProofs: ProjectProof[] = [
+  {
+    id: "proof-001",
+    disbursalId: "disb-ksm-001",
+    projectId: "KSM-WARD-011-2026",
+    contractorName: "Lake Basin Works Ltd",
+    tenderId: "KSM/DRAIN/T/044/2026",
+    gazetteNoticeUrl: "https://tenders.go.ke/sample-notice",
+    bankReceiptUrl: "https://kisumu.go.ke/adps/sample",
+    mediaProofUrls: [
+      "https://images.unsplash.com/photo-1581578731542-9468a2b32166?w=800&q=80",
+    ],
+    verifiedAt: "2026-09-18T10:00:00.000Z",
+    verifiedBy: "County Audit Desk (demo)",
+    caption: "Channel dredging — Nyalenda A, field photo",
+    lat: -0.102,
+    lng: 34.761,
+  },
+  {
+    id: "proof-002",
+    disbursalId: "disb-ksm-002",
+    projectId: "KSM-WARD-018-2026",
+    contractorName: "Western Infra JV",
+    tenderId: "KSM/ROADS/T/012/2026",
+    gazetteNoticeUrl: "https://tenders.go.ke/sample-notice",
+    mediaProofUrls: [
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+    ],
+    verifiedAt: "2026-09-20T14:30:00.000Z",
+    verifiedBy: "Ward engineer (demo)",
+    caption: "Culvert works along Ahero Road",
+    lat: -0.089,
+    lng: 34.745,
+  },
+];

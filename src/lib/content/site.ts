@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangle,
-  BookOpen,
   CloudRain,
   FileText,
   Hammer,
@@ -35,10 +34,22 @@ export const publicNavLinks: NavLink[] = [
     icon: Home,
   },
   {
-    href: "/about",
-    label: "About",
-    description: "Mission, tracks, and audiences",
-    icon: BookOpen,
+    href: "/transparency",
+    label: "Transparency",
+    description: "Fund disbursals, proofs, shelters",
+    icon: FileText,
+  },
+  {
+    href: "/counties",
+    label: "Counties",
+    description: "Map and county profiles",
+    icon: MapPin,
+  },
+  {
+    href: "/safety",
+    label: "Help",
+    description: "Emergency reports and alerts",
+    icon: AlertTriangle,
   },
 ];
 
@@ -218,8 +229,8 @@ export const pageMeta: Record<string, PageMeta> = {
     audienceIds: ["residents", "committees", "advocates", "low-connectivity"],
   },
   "/transparency": {
-    title: "Ward assignments",
-    summary: "Project-level detail: budgets, contractors, and paper vs field status.",
+    title: "Disbursal tracker",
+    summary: "Public fund flows, citations, and shelter status.",
     building:
       "Ward resource map from PPIP, COB, county ADPs, and NDMA-style feeds — budgets, contractors, completion, shelters, with tamper-evident records planned on-chain.",
     audienceIds: ["residents", "advocates"],

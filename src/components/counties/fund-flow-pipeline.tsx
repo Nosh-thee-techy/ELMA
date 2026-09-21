@@ -1,24 +1,30 @@
 import { cn } from "@/lib/utils";
-import { ArrowRight, FileSpreadsheet, Hammer, Wallet } from "lucide-react";
+import { ArrowRight, FileSpreadsheet, Hammer, MapPinned, Wallet } from "lucide-react";
 
 const steps = [
   {
-    id: "releases",
-    label: "Releases",
-    description: "What national & county treasuries published",
+    id: "allocation",
+    label: "Allocation",
+    description: "Budget voted & published for county / ward",
     icon: Wallet,
   },
   {
-    id: "spending",
-    label: "Spending",
-    description: "Cash out the door to programmes & contractors",
+    id: "disbursal",
+    label: "Disbursal",
+    description: "Treasury release to county accounts",
     icon: FileSpreadsheet,
   },
   {
-    id: "tenders",
-    label: "Tenders",
-    description: "Contracts, progress & field verification",
+    id: "procurement",
+    label: "Ward procurement",
+    description: "Tenders awarded to contractors",
     icon: Hammer,
+  },
+  {
+    id: "verified",
+    label: "Verified on-ground",
+    description: "Photos, receipts & gazette citations",
+    icon: MapPinned,
   },
 ] as const;
 
@@ -26,35 +32,30 @@ export function FundFlowPipeline({ className, compact }: { className?: string; c
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border/80 bg-white p-4 shadow-sm sm:p-6",
+        "rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-6",
         className,
       )}
-      aria-label="How public money flows"
+      aria-label="Public money flow"
     >
       {!compact ? (
-        <p className="mb-4 text-sm font-bold text-elma-navy">How to read ELMA</p>
+        <p className="mb-4 text-sm font-bold text-elma-navy dark:text-slate-100">
+          Allocation → disbursal → procurement → verified work
+        </p>
       ) : null}
-      <ol className="flex flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-2">
+      <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, index) => (
-          <li key={step.id} className="flex flex-1 items-center gap-2 sm:flex-col sm:text-center">
-            <div className="flex flex-1 flex-col items-center gap-2 sm:w-full">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-teal-100">
-                <step.icon className="size-5" aria-hidden />
+          <li key={step.id} className="relative flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900">
+                <step.icon className="size-4" aria-hidden />
               </div>
-              <div>
-                <p className="font-extrabold text-elma-navy">{step.label}</p>
-                {!compact ? (
-                  <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
-                    {step.description}
-                  </p>
-                ) : null}
-              </div>
+              {index < steps.length - 1 ? (
+                <ArrowRight className="hidden size-4 text-muted-foreground lg:block" aria-hidden />
+              ) : null}
             </div>
-            {index < steps.length - 1 ? (
-              <ArrowRight
-                className="hidden size-5 shrink-0 text-teal-600/60 sm:mx-1 sm:block"
-                aria-hidden
-              />
+            <p className="font-extrabold text-elma-navy dark:text-slate-50">{step.label}</p>
+            {!compact ? (
+              <p className="text-xs leading-snug text-muted-foreground">{step.description}</p>
             ) : null}
           </li>
         ))}

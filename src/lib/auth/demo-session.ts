@@ -1,5 +1,2 @@
-export const ELMA_SESSION_COOKIE = "elma_session";
-
-export function isActiveDemoSession(value: string | undefined): boolean {
-  return value === "active";
-}
+/** @deprecated Import from `@/lib/auth/session` */
+export { ELMA_SESSION_COOKIE, isActiveDemoSession } from "@/lib/auth/session";

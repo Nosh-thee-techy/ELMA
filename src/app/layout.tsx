@@ -1,11 +1,11 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import { LowBandwidthProvider } from "@/components/providers/low-bandwidth-provider";
-import { ELMA_SESSION_COOKIE, isActiveDemoSession } from "@/lib/auth/demo-session";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { getServerSession } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { cookies } from "next/headers";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -18,7 +18,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "ELMA — El-Niño Local Monitoring & Accountability",
   description:
-    "Cross-track civic platform for county flood transparency and community emergency safety during El Niño.",
+    "Public disaster fund transparency and first-responder operations during El Niño.",
   applicationName: "ELMA",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -39,15 +39,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const signedIn = isActiveDemoSession(cookies().get(ELMA_SESSION_COOKIE)?.value);
+  const { active, profile } = getServerSession();
 
   return (
-    <html lang="en" className={cn(jakarta.variable)}>
+    <html lang="en" className={cn(jakarta.variable)} suppressHydrationWarning>
       <body className="min-h-screen font-sans font-medium">
-        <LowBandwidthProvider>
-          <RegisterServiceWorker />
-          <AppShell signedIn={signedIn}>{children}</AppShell>
-        </LowBandwidthProvider>
+        <ThemeProvider>
+          <LowBandwidthProvider>
+            <RegisterServiceWorker />
+            <AppShell sessionActive={active} profile={profile}>
+              {children}
+            </AppShell>
+          </LowBandwidthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

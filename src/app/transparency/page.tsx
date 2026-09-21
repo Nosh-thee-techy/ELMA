@@ -1,94 +1,55 @@
-import { EmptyState } from "@/components/feedback/empty-state";
-import { ElmaMap } from "@/components/maps/elma-map";
-import { PageFrame } from "@/components/layout/page-frame";
-import { StatCard } from "@/components/layout/stat-card";
-import { DataSourcesPanel } from "@/components/transparency/data-sources-panel";
-import { ProjectCard } from "@/components/transparency/project-card";
-import { getMitigationProjects } from "@/lib/data/repository";
-import { formatKes } from "@/lib/utils";
-type Props = {
-  searchParams?: { county?: string; ward?: string };
-};
+import { FundFlowPipeline } from "@/components/counties/fund-flow-pipeline";
+import { ProofCard } from "@/components/transparency/proof-card";
+import { PublicShelterCard } from "@/components/shelters/public-shelter-card";
+import { fundDisbursals, projectProofs } from "@/lib/data/disbursals-seed";
+import { getShelters } from "@/lib/data/repository";
 
-export default async function TransparencyPage({ searchParams }: Props) {
-  const allProjects = await getMitigationProjects();
-  const countyFilter = searchParams?.county?.trim();
-  const wardFilter = searchParams?.ward?.trim();
-  const mitigationProjects = allProjects.filter((p) => {
-    if (countyFilter && p.county !== countyFilter) return false;
-    if (wardFilter && p.ward !== wardFilter) return false;
-    return true;
-  });
-  const totalBudget = mitigationProjects.reduce((s, p) => s + p.budgetKes, 0);
-  const mismatches = mitigationProjects.filter(
-    (p) => p.paperStatus === "complete" && p.fieldStatus !== "confirmed",
-  ).length;
-
-  const mapPoints = mitigationProjects
-    .filter((p) => p.lat != null && p.lng != null)
-    .map((p) => ({
-      id: p.id,
-      lat: p.lat as number,
-      lng: p.lng as number,
-      label: p.ward,
-      tone:
-        p.paperStatus === "complete" && p.fieldStatus !== "confirmed"
-          ? ("alert" as const)
-          : ("primary" as const),
-    }));
+export default async function TransparencyPage() {
+  const shelters = await getShelters();
 
   return (
-    <PageFrame pathname="/transparency">
-      <div className="flex flex-col gap-8">
-        {countyFilter || wardFilter ? (
-          <p className="rounded-2xl bg-primary/10 px-4 py-3 text-sm font-semibold text-foreground">
-            Showing{" "}
-            {wardFilter ? (
-              <>
-                <span className="text-primary">{wardFilter}</span>
-                {countyFilter ? ` · ${countyFilter}` : ""}
-              </>
-            ) : (
-              <span className="text-primary">{countyFilter}</span>
-            )}{" "}
-            —{" "}
-            <a href="/transparency" className="underline underline-offset-2">
-              clear filter
-            </a>
-          </p>
-        ) : null}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <StatCard label="Total allocated (demo)" value={formatKes(totalBudget)} />
-          <StatCard
-            label="Accountability flags"
-            value={String(mismatches)}
-            hint="complete on paper, not confirmed on ground"
-            tone="alert"
-          />
-        </div>
+    <div className="flex flex-col gap-10">
+      <section className="flex flex-col gap-3">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-400">
+          Public audit portal
+        </p>
+        <h1 className="text-balance text-3xl font-extrabold text-elma-navy dark:text-slate-50 sm:text-4xl">
+          Disaster fund disbursals & proof
+        </h1>
+        <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">
+          Inspect allocations, what was disbursed, tender details, and field evidence — with official
+          citations where published.
+        </p>
+      </section>
 
-        <ElmaMap points={mapPoints} />
+      <FundFlowPipeline />
 
-        <DataSourcesPanel />
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-extrabold text-elma-navy dark:text-slate-50">Disbursal records</h2>
+        <ul className="flex flex-col gap-6">
+          {fundDisbursals.map((d) => (
+            <li key={d.id}>
+              <ProofCard disbursal={d} proof={projectProofs.find((p) => p.disbursalId === d.id)} />
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        {mitigationProjects.length === 0 ? (
-          <EmptyState
-            icon="folder"
-            title="No projects published yet"
-            description="When counties publish ward-level mitigation data, it will appear here."
-            actionLabel="Return home"
-            actionHref="/"
-          />
-        ) : (
-          <ul className="flex flex-col gap-4">
-            {mitigationProjects.map((project) => (
-              <li key={project.id}>
-                <ProjectCard project={project} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </PageFrame>
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-extrabold text-elma-navy dark:text-slate-50">
+          Shelter capacity (live demo)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Status updated by verified responders on the operational dashboard.
+        </p>
+        <ul className="grid gap-4 md:grid-cols-2">
+          {shelters.map((s) => (
+            <li key={s.id}>
+              <PublicShelterCard shelter={s} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
   );
 }

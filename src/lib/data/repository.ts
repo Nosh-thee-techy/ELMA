@@ -1,4 +1,5 @@
-import { mitigationProjects, shelters } from "@/lib/data/seed";
+import { mitigationProjects } from "@/lib/data/seed";
+import { listSheltersMutable } from "@/lib/store/shelter-store";
 import { addReport, listAlerts, listReports, setAlertVerification } from "@/lib/store/memory";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { DataSourceId } from "@/lib/data/source-catalog";
@@ -183,10 +184,10 @@ export async function getMitigationProjects(): Promise<MitigationProject[]> {
 
 export async function getShelters(): Promise<Shelter[]> {
   const supabase = getSupabaseClient();
-  if (!supabase) return shelters;
+  if (!supabase) return listSheltersMutable();
 
   const { data, error } = await supabase.from("shelters").select("*");
-  if (error || !data?.length) return shelters;
+  if (error || !data?.length) return listSheltersMutable();
   return data.map((row) => mapShelter(row as Record<string, unknown>));
 }
 

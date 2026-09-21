@@ -44,13 +44,22 @@ export function PublicLanding() {
               dry spells.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/login?next=/counties"
-                className={cn(buttonVariants({ size: "lg" }), "rounded-full px-8 font-bold")}
-              >
-                Explore counties
-                <ArrowRight data-icon="inline-end" />
-              </Link>
+            <Link
+              href="/counties"
+              className={cn(buttonVariants({ size: "lg" }), "rounded-full px-8 font-bold")}
+            >
+              Explore counties
+              <ArrowRight data-icon="inline-end" />
+            </Link>
+            <Link
+              href="/transparency"
+              className={cn(
+                buttonVariants({ size: "lg", variant: "outline" }),
+                "rounded-full font-bold",
+              )}
+            >
+              View disbursals
+            </Link>
               <Link
                 href="/about"
                 className={cn(
@@ -117,14 +126,14 @@ export function PublicLanding() {
             </p>
           </div>
           <Link
-            href="/login?next=/counties"
+            href="/responder/login"
             className={cn(
               buttonVariants({ size: "lg" }),
               "rounded-full bg-emerald-500 font-bold text-white hover:bg-emerald-400",
             )}
           >
             <MapPin data-icon="inline-start" />
-            Sign in to map
+            First responder login
           </Link>
         </div>
       </section>
