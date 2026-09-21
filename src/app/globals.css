@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@source "../../src/**/*.{js,ts,jsx,tsx,mdx}";
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-sans);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-elma-forest: var(--elma-forest);
+  --color-elma-clay: var(--elma-clay);
+  --color-elma-sand: var(--elma-sand);
+  --color-elma-charcoal: var(--elma-charcoal);
+  --color-elma-clay-deep: var(--elma-clay-deep);
+  --color-elma-sidebar: var(--elma-sidebar);
+  --color-elma-canvas: var(--elma-canvas);
+  --color-elma-panel: var(--elma-panel);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+html.elma-lite *,
+html.elma-lite *::before,
+html.elma-lite *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+html.elma-lite .elma-no-blur {
+  backdrop-filter: none !important;
+}
+
+html.elma-lite img,
+html.elma-lite video,
+html.elma-lite .elma-map {
+  display: none;
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+:root {
+  --elma-forest: #15803d;
+  --elma-forest-deep: #052e16;
+  --elma-sidebar: #5b4b8a;
+  --elma-sidebar-deep: #463a6e;
+  --elma-canvas: #e8e6f2;
+  --elma-panel: #f5f4fa;
+  --elma-clay: #ea580c;
+  --elma-clay-deep: #c2410c;
+  --elma-sand: #fff7ed;
+  --elma-charcoal: #1e1b2e;
+
+  --background: var(--elma-canvas);
+  --foreground: #1e1b2e;
+  --card: #ffffff;
+  --card-foreground: #1e1b2e;
+  --popover: #ffffff;
+  --popover-foreground: #1e1b2e;
+  --primary: #5b4b8a;
+  --primary-foreground: #ffffff;
+  --secondary: #ebe8f5;
+  --secondary-foreground: #463a6e;
+  --muted: #eceaf4;
+  --muted-foreground: #6b6580;
+  --accent: #e8f5e9;
+  --accent-foreground: #14532d;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2dfea;
+  --input: #e2dfea;
+  --ring: #5b4b8a;
+  --radius: 1.25rem;
+}
+
+body {
+  background-color: var(--elma-canvas);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+.elma-sidebar {
+  background: linear-gradient(165deg, var(--elma-sidebar) 0%, var(--elma-sidebar-deep) 100%);
+}
+
+.elma-sidebar-art {
+  min-height: 7rem;
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(167, 243, 208, 0.35) 0%, transparent 40%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent);
+}
+
+@utility elma-card {
+  border-radius: 1.5rem;
+  background: var(--card);
+  border: 1px solid rgb(30 27 46 / 0.05);
+  box-shadow: 0 4px 24px -4px rgb(30 27 46 / 0.08);
+}
+
+h1,
+h2,
+h3,
+.font-heading {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+}
