@@ -1,0 +1,17 @@
+{
+  "project_id": "NRB-WARD-042-2026",
+  "county": "Nairobi",
+  "sub_county": "Embakasi East",
+  "ward": "Upper Savanna",
+  "title": "Clearance and De-siltation of Main Stormwater Drainage System",
+  "procurement_ref": "NCC/ENVIRO/T/089/2026-2027",
+  "budget_allocated_kes": 4500000,
+  "disbursed_kes": 3000000,
+  "contractor_name": "Mwananchi Civil Engineering Ltd",
+  "status": "In Progress",
+  "completion_percentage": 65,
+  "start_date": "2026-08-01",
+  "expected_end_date": "2026-10-15",
+  "source_url": "https://tenders.go.ke/sample-notice",
+  "data_source": "ppip"
+}

@@ -1,0 +1,20 @@
+{
+  "alert_id": "KMD-ALERT-2026-092",
+  "county": "Garissa",
+  "ward": "Sankuri",
+  "risk_level": "High Flood Warning",
+  "source": "Kenya Meteorological Department",
+  "headline": "Heavy Rainfall Expected in Tana River Basin",
+  "issued_at": "2026-09-21T18:00:00Z",
+  "data_source": "kmd",
+  "evacuation_centers": [
+    {
+      "name": "Sankuri Primary School Social Hall",
+      "capacity": 500,
+      "lat": -0.4285,
+      "lng": 39.5821,
+      "contact_person": "Ward Administrator",
+      "hotline": "1199"
+    }
+  ]
+}
