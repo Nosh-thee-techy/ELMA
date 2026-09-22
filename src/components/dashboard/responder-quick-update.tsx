@@ -31,6 +31,8 @@ export function ResponderQuickUpdate({ shelter }: { shelter: Shelter }) {
     shelter.status ?? "OPEN",
   );
   const [needs, setNeeds] = useState<string[]>(shelter.resourceNeeds ?? []);
+  const [mediaUrls, setMediaUrls] = useState<string[]>(shelter.mediaProofUrls ?? []);
+  const [captureMeta, setCaptureMeta] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,6 +48,8 @@ export function ResponderQuickUpdate({ shelter }: { shelter: Shelter }) {
           open,
           status,
           resourceNeeds: needs,
+          mediaProofUrls: mediaUrls,
+          fieldCaptureNote: captureMeta ?? undefined,
         }),
       });
       if (!res.ok) {
@@ -161,10 +165,35 @@ export function ResponderQuickUpdate({ shelter }: { shelter: Shelter }) {
           accept="image/*"
           capture="environment"
           className="text-xs file:mr-2 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-3 file:py-2 file:font-bold file:text-white"
-          onChange={() => {
-            /* PoC: upload wiring to storage in production */
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+              const dataUrl = typeof reader.result === "string" ? reader.result : "";
+              if (!dataUrl) return;
+              setMediaUrls((urls) => [...urls, dataUrl].slice(-3));
+              const stamp = new Date().toISOString();
+              if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => {
+                    setCaptureMeta(
+                      `Captured ${stamp} · GPS ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} ±${Math.round(pos.coords.accuracy)}m`,
+                    );
+                  },
+                  () => setCaptureMeta(`Captured ${stamp} · GPS unavailable`),
+                  { enableHighAccuracy: true, timeout: 8000 },
+                );
+              } else {
+                setCaptureMeta(`Captured ${stamp}`);
+              }
+            };
+            reader.readAsDataURL(file);
           }}
         />
+        {captureMeta ? (
+          <p className="text-xs text-muted-foreground">{captureMeta}</p>
+        ) : null}
       </label>
 
       <div className="grid grid-cols-2 gap-2">

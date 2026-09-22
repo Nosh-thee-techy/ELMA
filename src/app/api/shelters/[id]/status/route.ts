@@ -5,6 +5,7 @@ import {
   ELMA_SESSION_COOKIE,
   isActiveDemoSession,
 } from "@/lib/auth/session";
+import { appendAuditEvent } from "@/lib/store/audit-store";
 import { getShelterById, updateShelterStatus } from "@/lib/store/shelter-store";
 import type { ShelterOperationalStatus } from "@/lib/types";
 import { cookies } from "next/headers";
@@ -17,6 +18,7 @@ const bodySchema = z.object({
   status: z.enum(["OPEN", "NEAR_CAPACITY", "FULL", "CLOSED"]).optional(),
   resourceNeeds: z.array(z.string()).optional(),
   mediaProofUrls: z.array(z.string()).optional(),
+  fieldCaptureNote: z.string().optional(),
 });
 
 function sessionFromCookies() {
@@ -58,6 +60,18 @@ export async function POST(
     mediaProofUrls: parsed.data.mediaProofUrls,
     updatedBy: profile.email,
   });
+
+  if (parsed.data.fieldCaptureNote) {
+    appendAuditEvent({
+      kind: "field_media",
+      summary: `Field photo at ${shelter.name}`,
+      actor: profile.email,
+      county: shelter.county,
+      ward: shelter.ward,
+      relatedId: shelter.id,
+      metadata: { note: parsed.data.fieldCaptureNote },
+    });
+  }
 
   return NextResponse.json({ shelter: updated });
 }

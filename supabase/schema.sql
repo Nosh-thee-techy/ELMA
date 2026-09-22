@@ -167,3 +167,43 @@ alter table shelter_status_logs enable row level security;
 create policy "Public read disbursals" on fund_disbursals for select using (true);
 create policy "Public read proofs" on project_proofs for select using (true);
 create policy "Public read shelter logs" on shelter_status_logs for select using (true);
+
+create type citizen_flag_status as enum ('open', 'reviewing', 'resolved', 'dismissed');
+create type citizen_flag_target as enum ('disbursal', 'shelter', 'proof');
+create type audit_event_kind as enum (
+  'shelter_update', 'disbursal_verified', 'citizen_flag', 'report_created', 'field_media', 'sms_received'
+);
+
+create table audit_events (
+  id text primary key,
+  kind audit_event_kind not null,
+  summary text not null,
+  actor text not null,
+  county text,
+  ward text,
+  related_id text,
+  metadata jsonb,
+  content_hash text not null,
+  created_at timestamptz not null default now()
+);
+
+create index audit_events_created_idx on audit_events (created_at desc);
+
+create table citizen_flags (
+  id text primary key,
+  target_type citizen_flag_target not null,
+  target_id text not null,
+  reason text not null,
+  description text not null,
+  county text,
+  ward text,
+  status citizen_flag_status not null default 'open',
+  reporter_label text,
+  created_at timestamptz not null default now()
+);
+
+alter table audit_events enable row level security;
+alter table citizen_flags enable row level security;
+create policy "Public read audit events" on audit_events for select using (true);
+create policy "Anyone insert flags" on citizen_flags for insert with check (true);
+create policy "Public read flags" on citizen_flags for select using (true);

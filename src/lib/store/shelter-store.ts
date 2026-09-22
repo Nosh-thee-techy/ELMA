@@ -1,5 +1,6 @@
 import { shelters as seedShelters } from "@/lib/data/seed";
 import { deriveShelterStatus } from "@/lib/shelter/status";
+import { appendAuditEvent } from "@/lib/store/audit-store";
 import type { Shelter, ShelterOperationalStatus, ShelterStatusLog } from "@/lib/types";
 
 const globalShelter = globalThis as typeof globalThis & {
@@ -78,6 +79,16 @@ export function updateShelterStatus(input: {
     updatedAt: next.updatedAt ?? new Date().toISOString(),
   };
   logs.unshift(log);
+
+  appendAuditEvent({
+    kind: "shelter_update",
+    summary: `${next.name}: ${next.occupancy}/${next.capacity} (${next.status})`,
+    actor: input.updatedBy,
+    county: next.county,
+    ward: next.ward,
+    relatedId: next.id,
+    metadata: { open: next.open, needs: (next.resourceNeeds ?? []).length },
+  });
 
   return next;
 }

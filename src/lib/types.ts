@@ -126,6 +126,54 @@ export interface ProjectProof {
   caption?: string;
   lat?: number;
   lng?: number;
+  /** Demo integrity fingerprint (production: document hash). */
+  sourceDocumentHash?: string;
+  linkedShelterId?: string;
+}
+
+export type AuditEventKind =
+  | "shelter_update"
+  | "disbursal_verified"
+  | "citizen_flag"
+  | "report_created"
+  | "field_media"
+  | "sms_received";
+
+export interface AuditEvent {
+  id: string;
+  kind: AuditEventKind;
+  summary: string;
+  actor: string;
+  county?: string;
+  ward?: string;
+  relatedId?: string;
+  metadata?: Record<string, string | number | boolean>;
+  createdAt: string;
+  contentHash: string;
+}
+
+export type CitizenFlagTarget = "disbursal" | "shelter" | "proof";
+export type CitizenFlagStatus = "open" | "reviewing" | "resolved" | "dismissed";
+
+export interface CitizenFlag {
+  id: string;
+  targetType: CitizenFlagTarget;
+  targetId: string;
+  reason: string;
+  description: string;
+  county?: string;
+  ward?: string;
+  status: CitizenFlagStatus;
+  createdAt: string;
+  reporterLabel?: string;
+}
+
+export interface FieldMediaCapture {
+  dataUrl: string;
+  capturedAt: string;
+  lat?: number;
+  lng?: number;
+  accuracyM?: number;
 }
 
 export interface ShelterStatusLog {

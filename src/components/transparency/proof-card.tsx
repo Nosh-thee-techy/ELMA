@@ -1,14 +1,20 @@
-import type { FundDisbursal, ProjectProof } from "@/lib/types";
+import { ChainOfCustody } from "@/components/transparency/chain-of-custody";
+import { CitizenFlagButton } from "@/components/transparency/citizen-flag-button";
+import { ProofVerifyButton } from "@/components/transparency/proof-verify-button";
+import { getProofVerification } from "@/lib/store/audit-store";
+import type { FundDisbursal, ProjectProof, Shelter } from "@/lib/types";
 import { formatKes } from "@/lib/utils";
 import { ExternalLink, FileCheck, MapPin } from "lucide-react";
-import Image from "next/image";
 
 type Props = {
   disbursal: FundDisbursal;
   proof?: ProjectProof;
+  linkedShelter?: Shelter;
+  canVerify?: boolean;
 };
 
-export function ProofCard({ disbursal, proof }: Props) {
+export function ProofCard({ disbursal, proof, linkedShelter, canVerify }: Props) {
+  const liveVerification = proof ? getProofVerification(proof.id) : null;
   const disbursedPct =
     disbursal.totalAllocatedKes > 0
       ? Math.round((disbursal.totalDisbursedKes / disbursal.totalAllocatedKes) * 100)
@@ -95,7 +101,14 @@ export function ProofCard({ disbursal, proof }: Props) {
               {proof.mediaProofUrls.map((url) => (
                 <li key={url} className="overflow-hidden rounded-xl ring-1 ring-border">
                   <div className="relative aspect-video bg-muted">
-                    <Image src={url} alt={proof.caption ?? "Field proof"} fill className="object-cover" unoptimized />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={proof.caption ?? "Field proof"}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                   {proof.caption ? (
                     <p className="flex items-start gap-1 p-2 text-xs text-muted-foreground">
@@ -107,13 +120,28 @@ export function ProofCard({ disbursal, proof }: Props) {
               ))}
             </ul>
           ) : null}
-          {proof.verifiedAt ? (
+          {proof.verifiedAt || liveVerification ? (
             <p className="mt-3 text-xs text-muted-foreground">
-              Verified {new Date(proof.verifiedAt).toLocaleDateString()} · {proof.verifiedBy}
+              Verified{" "}
+              {new Date(
+                liveVerification?.verifiedAt ?? proof.verifiedAt ?? "",
+              ).toLocaleDateString()}{" "}
+              · {liveVerification?.verifiedBy ?? proof.verifiedBy}
             </p>
-          ) : null}
+          ) : (
+            <ProofVerifyButton proofId={proof.id} canVerify={Boolean(canVerify)} />
+          )}
         </section>
       ) : null}
+
+      <ChainOfCustody disbursal={disbursal} proof={proof} linkedShelter={linkedShelter} />
+
+      <CitizenFlagButton
+        targetType="proof"
+        targetId={proof?.id ?? disbursal.id}
+        county={disbursal.county}
+        ward={disbursal.ward}
+      />
     </article>
   );
 }

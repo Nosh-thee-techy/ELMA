@@ -17,7 +17,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { SessionProfile } from "@/lib/auth/session";
-import { publicNavLinks, type NavGroup } from "@/lib/content/site";
+import {
+  resolveNavGroups,
+  roleNavLabel,
+  showCountySearchInHeader,
+} from "@/lib/content/nav-by-role";
+import type { NavGroup } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
 import { Menu, WifiOff } from "lucide-react";
 import Link from "next/link";
@@ -37,12 +42,14 @@ export function AppShell({
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const isResponder =
-    sessionActive && profile && (profile.role === "RESPONDER" || profile.role === "ADMIN");
+  const isStaff =
+    sessionActive &&
+    profile &&
+    (profile.role === "RESPONDER" || profile.role === "ADMIN" || profile.role === "VERIFIER");
 
   const navGroups: NavGroup[] = useMemo(
-    () => [{ id: "main", title: "Menu", subtitle: "", items: publicNavLinks }],
-    [],
+    () => resolveNavGroups({ sessionActive, profile }),
+    [sessionActive, profile],
   );
 
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/responder/login")) {
@@ -55,7 +62,8 @@ export function AppShell({
     pathname.startsWith("/counties") ||
     pathname === "/releases" ||
     pathname === "/tenders" ||
-    pathname === "/transparency";
+    pathname === "/transparency" ||
+    pathname.startsWith("/channels");
   const isMarketing = pathname === "/" || pathname === "/about";
 
   return (
@@ -101,7 +109,9 @@ export function AppShell({
                   className="elma-sidebar flex w-[min(100vw-2rem,20rem)] flex-col gap-0 rounded-l-[1.75rem] border-0 p-0 text-white"
                 >
                   <SheetHeader className="border-b border-white/10 p-5 text-left">
-                    <SheetTitle className="font-extrabold tracking-widest text-white">Menu</SheetTitle>
+                    <SheetTitle className="font-extrabold tracking-widest text-white">
+                      {isStaff && profile ? roleNavLabel(profile) : "Menu"}
+                    </SheetTitle>
                   </SheetHeader>
                   <div className="flex-1 overflow-y-auto p-4">
                     <SiteNav
@@ -110,7 +120,7 @@ export function AppShell({
                       groups={navGroups}
                       onNavigate={() => setMenuOpen(false)}
                     />
-                    {isResponder ? (
+                    {isStaff ? (
                       <div className="mt-4 border-t border-white/10 pt-4">
                         <LogoutButton dark />
                       </div>
@@ -124,7 +134,14 @@ export function AppShell({
           <SiteNav dark orientation="horizontal" groups={navGroups} className="hidden lg:flex" />
 
           <div className="hidden items-center gap-2 lg:flex lg:shrink-0 lg:justify-end">
-            <PublicCountySearch className="hidden xl:block" />
+            {showCountySearchInHeader(profile) ? (
+              <PublicCountySearch className="hidden xl:block" />
+            ) : null}
+            {isStaff && profile ? (
+              <span className="hidden rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white lg:inline">
+                {roleNavLabel(profile)}
+              </span>
+            ) : null}
             <ThemeToggle inverted />
             <Button
               type="button"
@@ -139,19 +156,8 @@ export function AppShell({
               <WifiOff data-icon="inline-start" />
               Lite
             </Button>
-            {isResponder ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "h-10 rounded-full bg-emerald-500 font-bold text-white hover:bg-emerald-400",
-                  )}
-                >
-                  Dashboard
-                </Link>
-                <LogoutButton dark />
-              </>
+            {isStaff ? (
+              <LogoutButton dark />
             ) : (
               <Link
                 href="/responder/login"
@@ -160,7 +166,7 @@ export function AppShell({
                   "h-10 rounded-full bg-white font-bold text-elma-navy hover:bg-white/90",
                 )}
               >
-                First responder login
+                Staff sign in
               </Link>
             )}
           </div>

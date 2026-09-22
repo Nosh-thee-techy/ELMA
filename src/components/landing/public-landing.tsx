@@ -1,4 +1,6 @@
+import { HumanPhoto } from "@/components/media/human-photo";
 import { buttonVariants } from "@/components/ui/button-variants";
+import { audiencePhotoById, elmaPhotos } from "@/lib/content/stock-images";
 import { targetAudiences } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
 import { ArrowRight, MapPin, Shield, Users } from "lucide-react";
@@ -10,20 +12,13 @@ const steps = [
     body: "See how public money and emergency help are supposed to reach your ward — in plain language.",
   },
   {
-    title: "Sign in",
-    body: "Open the county map to explore releases, tenders, and what you can access where you live.",
+    title: "Explore openly",
+    body: "Use Transparency and Counties — no login required for disbursals, tenders, and shelter status.",
   },
   {
-    title: "Pick your county",
-    body: "Tap the map or use the filter — then read funds, contractors, and help near you.",
+    title: "Act when it matters",
+    body: "Report via web or the feature-phone simulator; responders sign in to update live shelter capacity.",
   },
-];
-
-const portraitTints = [
-  "from-[#0F172A] to-[#334155]",
-  "from-[#059669] to-[#0D9488]",
-  "from-[#0D9488] to-[#14B8A6]",
-  "from-[#D97706] to-[#F59E0B]",
 ];
 
 export function PublicLanding() {
@@ -71,30 +66,36 @@ export function PublicLanding() {
               </Link>
             </div>
           </div>
-          <div className="relative min-h-[280px] bg-slate-100 p-6 sm:p-8 lg:min-h-0">
-            <p className="mb-4 flex items-center gap-2 text-sm font-bold text-primary">
+          <div className="relative flex min-h-[320px] flex-col gap-4 p-4 sm:p-6 lg:min-h-[420px] lg:p-5">
+            <HumanPhoto
+              src={elmaPhotos.heroCommunity}
+              alt="Maasai community celebration in Kenya"
+              className="absolute inset-0 rounded-none lg:rounded-l-none"
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+            <p className="relative z-10 flex items-center gap-2 text-sm font-bold text-white drop-shadow-md">
               <Users className="size-4" aria-hidden />
               Built for people on the ground
             </p>
-            <div className="grid grid-cols-2 gap-3">
-              {targetAudiences.slice(0, 4).map((a, i) => (
+            <div className="relative z-10 mt-auto grid grid-cols-2 gap-2 sm:gap-3">
+              {targetAudiences.slice(0, 4).map((a) => (
                 <article
                   key={a.id}
-                  className="relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5"
+                  className="overflow-hidden rounded-2xl bg-white/95 shadow-lg ring-1 ring-black/10 backdrop-blur-sm dark:bg-slate-900/90"
                 >
-                  <div
-                    className={cn(
-                      "mb-3 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br text-lg font-extrabold text-white",
-                      portraitTints[i % portraitTints.length],
-                    )}
-                    aria-hidden
-                  >
-                    {a.title.slice(0, 1)}
+                  <HumanPhoto
+                    src={audiencePhotoById[a.id] ?? elmaPhotos.heroRelief}
+                    alt={a.title}
+                    className="aspect-[4/3] w-full"
+                    sizes="200px"
+                  />
+                  <div className="p-3">
+                    <p className="text-sm font-bold leading-snug text-foreground">{a.title}</p>
+                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+                      {a.who}
+                    </p>
                   </div>
-                  <p className="font-bold leading-snug text-foreground">{a.title}</p>
-                  <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
-                    {a.who}
-                  </p>
                 </article>
               ))}
             </div>
@@ -119,10 +120,11 @@ export function PublicLanding() {
           <div className="max-w-xl">
             <p className="flex items-center gap-2 text-sm font-bold text-white/80">
               <Shield className="size-4" aria-hidden />
-              After sign-in
+              Field & audit roles
             </p>
             <p className="mt-2 text-xl font-extrabold">
-              Interactive Kenya map — filter or tap a county to open releases, tenders, and help.
+              Responders update shelters; verifiers record proof on the disbursal tracker — citizens stay on
+              the public map.
             </p>
           </div>
           <Link

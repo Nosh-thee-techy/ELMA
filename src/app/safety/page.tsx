@@ -1,4 +1,6 @@
+import { HumanPhoto } from "@/components/media/human-photo";
 import { StatCard } from "@/components/layout/stat-card";
+import { elmaPhotos } from "@/lib/content/stock-images";
 import { PageFrame } from "@/components/layout/page-frame";
 import { buttonVariants } from "@/components/ui/button-variants";
 import {
@@ -26,10 +28,20 @@ export default async function SafetyPage() {
 
   return (
     <PageFrame pathname="/safety">
-      <p className="-mt-2 max-w-2xl text-sm font-medium text-muted-foreground">
-        Everything for when rains hit — pick one action below. You do not need to hunt through the
-        top menu.
-      </p>
+      <div className="elma-card overflow-hidden p-0">
+        <div className="grid md:grid-cols-[1fr_240px]">
+          <p className="p-6 text-sm font-medium leading-relaxed text-muted-foreground md:p-8">
+            Everything for when rains hit — pick one action below. You do not need to hunt through the
+            top menu.
+          </p>
+          <HumanPhoto
+            src={elmaPhotos.safetyReporting}
+            alt="African woman using a mobile phone to reach help"
+            className="min-h-[160px] md:min-h-full"
+            sizes="240px"
+          />
+        </div>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard label="Verified alerts" value={String(verified)} hint={`${rumors} rumor flagged`} />
@@ -42,7 +54,21 @@ export default async function SafetyPage() {
         <StatCard label="Shelter spaces left" value={String(spacesLeft)} hint="open halls in demo" />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Link
+          href="/channels/phone"
+          className="elma-card flex flex-col gap-3 border-emerald-600/20 bg-emerald-50/50 p-6 transition hover:shadow-md dark:bg-emerald-950/20"
+        >
+          <Radio className="size-8 text-emerald-700 dark:text-emerald-400" aria-hidden />
+          <p className="text-lg font-extrabold">Feature phone (USSD/SMS)</p>
+          <p className="text-sm text-muted-foreground">
+            On-screen Kabambe simulator — dial *384*253# or text REPORT|… end to end.
+          </p>
+          <span className={cn(buttonVariants(), "mt-auto w-fit rounded-full bg-emerald-600 font-bold")}>
+            Open simulator
+          </span>
+        </Link>
+
         <Link
           href="/emergency"
           className="elma-card flex flex-col gap-3 border-destructive/20 bg-[#fff5f5] p-6 transition hover:shadow-md"
@@ -50,7 +76,7 @@ export default async function SafetyPage() {
           <Siren className="size-8 text-destructive" aria-hidden />
           <p className="text-lg font-extrabold">Report an emergency</p>
           <p className="text-sm text-muted-foreground">
-            Structured distress signal when hotlines jam. Web today; USSD/SMS on the roadmap.
+            Structured distress signal when hotlines jam — web form or feature-phone USSD/SMS lab.
           </p>
           <span className={cn(buttonVariants(), "mt-auto w-fit rounded-full bg-destructive font-bold")}>
             Open form

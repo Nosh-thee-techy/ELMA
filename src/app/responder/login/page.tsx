@@ -11,7 +11,7 @@ function ResponderLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/dashboard";
-  const [role, setRole] = useState<"RESPONDER" | "ADMIN">("RESPONDER");
+  const [role, setRole] = useState<"RESPONDER" | "ADMIN" | "VERIFIER">("RESPONDER");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,17 +47,17 @@ function ResponderLoginForm() {
           needs, and upload field photos.
         </p>
         <div className="mt-4 flex gap-2">
-          {(["RESPONDER", "ADMIN"] as const).map((r) => (
+          {(["RESPONDER", "ADMIN", "VERIFIER"] as const).map((r) => (
             <button
               key={r}
               type="button"
               onClick={() => setRole(r)}
               className={cn(
-                "flex-1 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wide",
+                "flex-1 rounded-xl px-2 py-2 text-[10px] font-bold uppercase tracking-wide sm:text-xs",
                 role === r ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground",
               )}
             >
-              {r === "RESPONDER" ? "Responder" : "Admin"}
+              {r === "RESPONDER" ? "Responder" : r === "ADMIN" ? "Admin" : "Verifier"}
             </button>
           ))}
         </div>

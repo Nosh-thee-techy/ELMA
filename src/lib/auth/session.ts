@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-export type ElmaRole = "ADMIN" | "RESPONDER";
+export type ElmaRole = "ADMIN" | "RESPONDER" | "VERIFIER";
 
 export type SessionProfile = {
   role: ElmaRole;
@@ -21,7 +21,9 @@ export function parseProfileCookie(raw: string | undefined): SessionProfile | nu
   if (!raw) return null;
   try {
     const parsed = JSON.parse(decodeURIComponent(raw)) as SessionProfile;
-    if (parsed.role !== "ADMIN" && parsed.role !== "RESPONDER") return null;
+    if (parsed.role !== "ADMIN" && parsed.role !== "RESPONDER" && parsed.role !== "VERIFIER") {
+      return null;
+    }
     if (!parsed.email || !parsed.county || !parsed.organization) return null;
     return parsed;
   } catch {

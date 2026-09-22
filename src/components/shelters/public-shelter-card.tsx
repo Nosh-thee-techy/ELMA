@@ -1,3 +1,4 @@
+import { CitizenFlagButton } from "@/components/transparency/citizen-flag-button";
 import { ShelterStatusBadge } from "@/components/shelters/shelter-status-badge";
 import { withShelterStatus } from "@/lib/shelter/status";
 import type { Shelter } from "@/lib/types";
@@ -45,6 +46,13 @@ export function PublicShelterCard({ shelter }: { shelter: Shelter }) {
           Needs: {s.resourceNeeds.join(", ")}
         </p>
       ) : null}
+      <CitizenFlagButton
+        targetType="shelter"
+        targetId={s.id}
+        county={s.county}
+        ward={s.ward}
+        label="Report wrong status"
+      />
     </article>
   );
 }

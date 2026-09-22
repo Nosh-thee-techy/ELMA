@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const bodySchema = z.object({
-  role: z.enum(["RESPONDER", "ADMIN"]),
+  role: z.enum(["RESPONDER", "ADMIN", "VERIFIER"]),
   email: z.string().email().optional(),
 });
 
@@ -18,21 +18,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid login" }, { status: 400 });
   }
 
-  const profile: SessionProfile =
-    parsed.data.role === "ADMIN"
-      ? {
-          role: "ADMIN",
-          email: parsed.data.email ?? "admin@kisumu.go.ke",
-          county: "Kisumu",
-          organization: "County Government",
-        }
-      : {
-          role: "RESPONDER",
-          email: parsed.data.email ?? "responder@krcs.ke",
-          county: "Kisumu",
-          ward: "Kondele",
-          organization: "Kenya Red Cross Society",
-        };
+  let profile: SessionProfile;
+  if (parsed.data.role === "ADMIN") {
+    profile = {
+      role: "ADMIN",
+      email: parsed.data.email ?? "admin@kisumu.go.ke",
+      county: "Kisumu",
+      organization: "County Government",
+    };
+  } else if (parsed.data.role === "VERIFIER") {
+    profile = {
+      role: "VERIFIER",
+      email: parsed.data.email ?? "audit@elma.ke",
+      county: "National",
+      organization: "Independent Audit Desk (demo)",
+    };
+  } else {
+    profile = {
+      role: "RESPONDER",
+      email: parsed.data.email ?? "responder@krcs.ke",
+      county: "Kisumu",
+      ward: "Kondele",
+      organization: "Kenya Red Cross Society",
+    };
+  }
 
   const res = NextResponse.json({ ok: true, profile });
   res.cookies.set(ELMA_SESSION_COOKIE, "active", {

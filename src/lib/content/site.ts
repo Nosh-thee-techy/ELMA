@@ -48,10 +48,18 @@ export const publicNavLinks: NavLink[] = [
   {
     href: "/safety",
     label: "Help",
-    description: "Emergency reports and alerts",
+    description: "Emergency reports, alerts, USSD/SMS",
     icon: AlertTriangle,
   },
 ];
+
+/** Linked from Help hub — not in the top bar (keeps navbar readable) */
+export const channelsNavLink: NavLink = {
+  href: "/channels/phone",
+  label: "Feature phone",
+  description: "USSD & SMS simulator",
+  icon: Radio,
+};
 
 /** Signed-in portal */
 export const portalNavLinks: NavLink[] = [

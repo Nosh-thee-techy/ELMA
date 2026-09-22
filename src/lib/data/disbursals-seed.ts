@@ -1,3 +1,4 @@
+import { elmaPhotos } from "@/lib/content/stock-images";
 import type { FundDisbursal, ProjectProof } from "@/lib/types";
 
 export const fundDisbursals: FundDisbursal[] = [
@@ -52,14 +53,14 @@ export const projectProofs: ProjectProof[] = [
     tenderId: "KSM/DRAIN/T/044/2026",
     gazetteNoticeUrl: "https://tenders.go.ke/sample-notice",
     bankReceiptUrl: "https://kisumu.go.ke/adps/sample",
-    mediaProofUrls: [
-      "https://images.unsplash.com/photo-1581578731542-9468a2b32166?w=800&q=80",
-    ],
+    mediaProofUrls: [elmaPhotos.proofDrainageCrew, elmaPhotos.proofCommunitySecond],
     verifiedAt: "2026-09-18T10:00:00.000Z",
     verifiedBy: "County Audit Desk (demo)",
     caption: "Channel dredging — Nyalenda A, field photo",
     lat: -0.102,
     lng: 34.761,
+    sourceDocumentHash: "a3f91c2e8b004d17",
+    linkedShelterId: "sh-002",
   },
   {
     id: "proof-002",
@@ -68,13 +69,13 @@ export const projectProofs: ProjectProof[] = [
     contractorName: "Western Infra JV",
     tenderId: "KSM/ROADS/T/012/2026",
     gazetteNoticeUrl: "https://tenders.go.ke/sample-notice",
-    mediaProofUrls: [
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
-    ],
+    mediaProofUrls: [elmaPhotos.proofDrainageCrew, elmaPhotos.proofShelterCommunity],
     verifiedAt: "2026-09-20T14:30:00.000Z",
     verifiedBy: "Ward engineer (demo)",
     caption: "Culvert works along Ahero Road",
     lat: -0.089,
     lng: 34.745,
+    sourceDocumentHash: "c7e44b9012fa88ac",
+    linkedShelterId: "sh-001",
   },
 ];

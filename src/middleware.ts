@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(login);
   }
 
-  if (profile.role !== "RESPONDER" && profile.role !== "ADMIN") {
+  if (profile.role !== "RESPONDER" && profile.role !== "ADMIN" && profile.role !== "VERIFIER") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
