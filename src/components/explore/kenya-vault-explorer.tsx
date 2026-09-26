@@ -1,14 +1,24 @@
 "use client";
 
 import { CountyPortalView } from "@/components/counties/county-portal-view";
-import { KenyaCountyMap } from "@/components/counties/kenya-county-map";
+import { KenyaCountyMapSkeleton } from "@/components/counties/kenya-county-map-skeleton";
 import { CountyInsightPanel } from "@/components/explore/county-insight-panel";
+import dynamic from "next/dynamic";
 import { DataSourcesPanel } from "@/components/transparency/data-sources-panel";
 import { displayNameFromSlug } from "@/lib/data/counties";
 import type { CountyCardSummary, CountyPortalData } from "@/lib/data/county-finance";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+const KenyaCountyMap = dynamic(
+  () =>
+    import("@/components/counties/kenya-county-map").then((m) => m.KenyaCountyMap),
+  {
+    ssr: false,
+    loading: () => <KenyaCountyMapSkeleton />,
+  },
+);
 
 function resolveSummary(slug: string | undefined, summaries: CountyCardSummary[]): CountyCardSummary | undefined {
   if (!slug) return undefined;
@@ -124,7 +134,7 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
         </div>
 
         <div className="relative grid min-h-[min(72vh,780px)] lg:grid-cols-[1fr_min(400px,36vw)]">
-          <div className="relative z-0 flex min-h-[360px] min-w-0 flex-col overflow-hidden p-4 sm:p-6 lg:min-h-[480px]">
+          <div className="relative z-0 min-h-[360px] min-w-0 p-4 sm:p-6 lg:min-h-[480px]">
             <KenyaCountyMap
               counties={summaries}
               selectedSlug={selectedSlug}
@@ -132,7 +142,7 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
                 setSelectedSlug(slug);
                 setExpanded(false);
               }}
-              className="min-h-[300px] flex-1 lg:min-h-[520px]"
+              className="h-[min(520px,50vh)] w-full lg:h-[520px]"
             />
           </div>
 

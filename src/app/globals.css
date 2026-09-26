@@ -57,7 +57,7 @@ html.elma-lite .elma-no-blur {
 
 html.elma-lite img,
 html.elma-lite video,
-html.elma-lite .elma-map {
+html.elma-lite .elma-map:not(.kenya-county-map) {
   display: none;
 }
 

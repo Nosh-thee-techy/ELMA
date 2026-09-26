@@ -44,7 +44,14 @@ export function slugFromCountyName(name: string): string {
 
 /** geoBoundaries ADM1 `shapeName` → ELMA slug */
 export function slugFromShapeName(shapeName: string): string {
-  return slugFromCountyName(shapeName.trim());
+  const trimmed = shapeName.trim();
+  const known = countyByName(trimmed);
+  if (known) return known.slug;
+  return trimmed
+    .toLowerCase()
+    .replace(/\//g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 }
 
 export function displayNameFromSlug(slug: string): string {

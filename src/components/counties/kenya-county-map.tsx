@@ -3,10 +3,11 @@
 import { useLowBandwidth } from "@/components/providers/low-bandwidth-provider";
 import { KENYA_MAP_BOUNDS, kenyaMapBoundsSwNe, slugFromShapeName } from "@/lib/data/counties";
 import type { CountyCardSummary } from "@/lib/data/county-finance";
-import { mapStyleForTheme } from "@/lib/maps/styles";
+import { mapStyleForTheme, minimalKenyaMapStyle } from "@/lib/maps/styles";
 import { cn } from "@/lib/utils";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTheme } from "@/components/providers/theme-provider";
+import type { StyleSpecification } from "maplibre-gl";
 import type { Feature, FeatureCollection, MultiPolygon, Polygon, Position } from "geojson";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Map, { Layer, NavigationControl, ScaleControl, Source } from "react-map-gl/maplibre";
@@ -78,7 +79,9 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
   const mapRef = useRef<MapRef>(null);
   const [mapReady, setMapReady] = useState(false);
   const [rawGeo, setRawGeo] = useState<FeatureCollection | null>(null);
+  const [geoError, setGeoError] = useState(false);
   const [hoverSlug, setHoverSlug] = useState<string | null>(null);
+  const [useMinimalBasemap, setUseMinimalBasemap] = useState(false);
 
   const demoSlugs = useMemo(() => new Set(counties.filter((c) => c.hasDemoData).map((c) => c.slug)), [counties]);
 
@@ -87,11 +90,17 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
     void (async () => {
       try {
         const res = await fetch("/geo/kenya-counties.geojson");
-        if (!res.ok) return;
+        if (!res.ok) {
+          if (!cancelled) setGeoError(true);
+          return;
+        }
         const json = (await res.json()) as FeatureCollection;
-        if (!cancelled) setRawGeo(json);
+        if (!cancelled) {
+          setRawGeo(json);
+          setGeoError(false);
+        }
       } catch {
-        /* offline */
+        if (!cancelled) setGeoError(true);
       }
     })();
     return () => {
@@ -119,7 +128,9 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
     };
   }, [rawGeo, demoSlugs, selectedSlug]);
 
-  const mapStyle = mapStyleForTheme(theme);
+  const mapStyle: string | StyleSpecification = useMinimalBasemap
+    ? minimalKenyaMapStyle(theme === "dark")
+    : mapStyleForTheme(theme);
 
   const fitKenya = useCallback(() => {
     if (!mapRef.current) return;
@@ -154,9 +165,10 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
 
   if (lowBandwidth) {
     return (
-      <div className="flex flex-col gap-2 rounded-2xl border border-dashed border-white/20 bg-white/5 p-4 text-sm text-white/80">
-        <p className="font-bold">Lite mode — pick a county from the list</p>
-        <ul className="grid grid-cols-2 gap-1 text-xs">
+      <div className="flex h-[min(520px,50vh)] min-h-[320px] flex-col gap-2 rounded-2xl border border-dashed border-white/20 bg-white/5 p-4 text-sm text-white/80 lg:h-[520px]">
+        <p className="font-bold">Lite mode — map hidden to save data</p>
+        <p className="text-xs text-white/55">Turn off <strong className="text-white">Lite</strong> in the header to see the Kenya county map.</p>
+        <ul className="mt-2 grid flex-1 grid-cols-2 gap-1 overflow-y-auto text-xs">
           {counties
             .filter((c) => c.hasDemoData)
             .map((c) => (
@@ -178,13 +190,14 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
   return (
     <div
       className={cn(
-        "elma-map relative isolate min-h-[320px] max-w-full flex-1 overflow-hidden rounded-2xl border border-white/15 bg-slate-900/40 shadow-inner ring-1 ring-white/10",
+        "kenya-county-map relative isolate w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-900/40 shadow-inner ring-1 ring-white/10",
         className,
       )}
     >
       <Map
         ref={mapRef}
         onLoad={() => setMapReady(true)}
+        onError={() => setUseMinimalBasemap(true)}
         initialViewState={{
           latitude: 0.05,
           longitude: 37.9,
@@ -193,7 +206,7 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
         maxBounds={KENYA_MAP_BOUNDS}
         mapStyle={mapStyle}
         style={{ width: "100%", height: "100%" }}
-        interactiveLayerIds={["counties-fill"]}
+        interactiveLayerIds={enrichedGeo ? ["counties-fill"] : undefined}
         cursor={hoverSlug ? "pointer" : undefined}
         onClick={onMapClick}
         onMouseMove={(e) => {
@@ -242,8 +255,17 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
       <div className="pointer-events-none absolute left-3 top-3 max-w-[14rem] rounded-xl bg-white/95 px-3 py-2 text-[10px] font-bold leading-snug text-slate-700 shadow-md ring-1 ring-black/5 dark:bg-slate-900/90 dark:text-slate-200">
         Kenya · 47 counties
         <span className="mt-0.5 block font-normal text-slate-500 dark:text-slate-400">
-          Boundaries: geoBoundaries (ADM1)
+          {geoError
+            ? "Could not load boundaries — retry refresh"
+            : rawGeo
+              ? "Boundaries: geoBoundaries (ADM1)"
+              : "Loading county shapes…"}
         </span>
+        {useMinimalBasemap ? (
+          <span className="mt-0.5 block font-normal text-amber-600 dark:text-amber-300">
+            Offline basemap — counties still clickable
+          </span>
+        ) : null}
       </div>
       {hoverSlug ? (
         <div className="pointer-events-none absolute bottom-14 left-1/2 z-10 -translate-x-1/2 rounded-full bg-slate-900/90 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
