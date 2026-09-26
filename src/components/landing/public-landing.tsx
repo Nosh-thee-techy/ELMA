@@ -7,6 +7,7 @@ import {
   LifeBuoy,
   MapPin,
   Mic,
+  Presentation,
   ShieldCheck,
   Siren,
   Smartphone,
@@ -113,6 +114,18 @@ export function PublicLanding() {
               >
                 Staff sign-in
               </Link>
+              <a
+                href="https://canva.link/78kvq7fjr9gmokd"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ size: "lg", variant: "outline" }),
+                  "h-12 rounded-full border-white/20 font-bold text-white/90 hover:bg-white/10",
+                )}
+              >
+                <Presentation data-icon="inline-start" />
+                Slide deck
+              </a>
             </div>
           </div>
 
