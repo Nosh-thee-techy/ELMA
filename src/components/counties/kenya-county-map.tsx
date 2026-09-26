@@ -3,7 +3,7 @@
 import { useLowBandwidth } from "@/components/providers/low-bandwidth-provider";
 import { KENYA_MAP_BOUNDS, kenyaMapBoundsSwNe, slugFromShapeName } from "@/lib/data/counties";
 import type { CountyCardSummary } from "@/lib/data/county-finance";
-import { mapStyleForTheme, minimalKenyaMapStyle } from "@/lib/maps/styles";
+import { KENYA_EXPLORE_MAP_STYLE, mapStyleForTheme } from "@/lib/maps/styles";
 import { cn } from "@/lib/utils";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTheme } from "@/components/providers/theme-provider";
@@ -18,6 +18,8 @@ type Props = {
   selectedSlug?: string;
   onSelect: (slug: string) => void;
   className?: string;
+  /** Explore uses local style so counties stay visible without Carto tiles. */
+  variant?: "explore" | "default";
 };
 
 type EnrichedProps = {
@@ -73,7 +75,13 @@ function bboxFromGeojson(fc: FeatureCollection): [[number, number], [number, num
   ];
 }
 
-export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: Props) {
+export function KenyaCountyMap({
+  counties,
+  selectedSlug,
+  onSelect,
+  className,
+  variant = "default",
+}: Props) {
   const { lowBandwidth } = useLowBandwidth();
   const { theme } = useTheme();
   const mapRef = useRef<MapRef>(null);
@@ -81,7 +89,7 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
   const [rawGeo, setRawGeo] = useState<FeatureCollection | null>(null);
   const [geoError, setGeoError] = useState(false);
   const [hoverSlug, setHoverSlug] = useState<string | null>(null);
-  const [useMinimalBasemap, setUseMinimalBasemap] = useState(false);
+  const [useMinimalBasemap, setUseMinimalBasemap] = useState(variant === "explore");
 
   const demoSlugs = useMemo(() => new Set(counties.filter((c) => c.hasDemoData).map((c) => c.slug)), [counties]);
 
@@ -94,9 +102,10 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
           if (!cancelled) setGeoError(true);
           return;
         }
-        const json = (await res.json()) as FeatureCollection;
+        const json = (await res.json()) as FeatureCollection & { crs?: unknown };
+        const { crs: _crs, ...fc } = json;
         if (!cancelled) {
-          setRawGeo(json);
+          setRawGeo(fc as FeatureCollection);
           setGeoError(false);
         }
       } catch {
@@ -128,9 +137,10 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
     };
   }, [rawGeo, demoSlugs, selectedSlug]);
 
-  const mapStyle: string | StyleSpecification = useMinimalBasemap
-    ? minimalKenyaMapStyle(theme === "dark")
-    : mapStyleForTheme(theme);
+  const mapStyle: string | StyleSpecification =
+    variant === "explore" || useMinimalBasemap
+      ? KENYA_EXPLORE_MAP_STYLE
+      : mapStyleForTheme(theme);
 
   const fitKenya = useCallback(() => {
     if (!mapRef.current) return;
@@ -145,6 +155,13 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
   useEffect(() => {
     if (mapReady) fitKenya();
   }, [mapReady, fitKenya]);
+
+  useEffect(() => {
+    if (!mapReady || !enrichedGeo) return;
+    const map = mapRef.current?.getMap();
+    map?.resize();
+    fitKenya();
+  }, [enrichedGeo, mapReady, fitKenya]);
 
   useEffect(() => {
     if (!mapReady || !selectedSlug || !enrichedGeo) return;
@@ -228,12 +245,20 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
                 "fill-color": [
                   "case",
                   ["==", ["get", "selected"], 1],
-                  "rgba(16, 185, 129, 0.55)",
+                  "#10b981",
                   ["==", ["get", "hasDemo"], 1],
-                  "rgba(52, 211, 153, 0.32)",
-                  "rgba(148, 163, 184, 0.18)",
+                  "#34d399",
+                  "#64748b",
                 ],
-                "fill-outline-color": "rgba(255,255,255,0.15)",
+                "fill-opacity": [
+                  "case",
+                  ["==", ["get", "selected"], 1],
+                  0.72,
+                  ["==", ["get", "hasDemo"], 1],
+                  0.55,
+                  0.38,
+                ],
+                "fill-outline-color": "#f8fafc",
               }}
             />
             <Layer
@@ -243,10 +268,12 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
                 "line-color": [
                   "case",
                   ["==", ["get", "selected"], 1],
-                  "#34d399",
-                  "rgba(255,255,255,0.45)",
+                  "#6ee7b7",
+                  ["==", ["get", "hasDemo"], 1],
+                  "#a7f3d0",
+                  "#e2e8f0",
                 ],
-                "line-width": ["case", ["==", ["get", "selected"], 1], 2.5, 0.8],
+                "line-width": ["case", ["==", ["get", "selected"], 1], 2.5, 1.2],
               }}
             />
           </Source>

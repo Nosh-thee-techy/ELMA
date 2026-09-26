@@ -136,6 +136,7 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
         <div className="relative grid min-h-[min(72vh,780px)] lg:grid-cols-[1fr_min(400px,36vw)]">
           <div className="relative z-0 min-h-[360px] min-w-0 p-4 sm:p-6 lg:min-h-[480px]">
             <KenyaCountyMap
+              variant="explore"
               counties={summaries}
               selectedSlug={selectedSlug}
               onSelect={(slug) => {

@@ -16,11 +16,14 @@ export function minimalKenyaMapStyle(dark: boolean): StyleSpecification {
       {
         id: "background",
         type: "background",
-        paint: { "background-color": dark ? "#0f172a" : "#e2e8f0" },
+        paint: { "background-color": dark ? "#1e293b" : "#e2e8f0" },
       },
     ],
   };
 }
+
+/** Explore map: no third-party tiles — county polygons are the hero. */
+export const KENYA_EXPLORE_MAP_STYLE = minimalKenyaMapStyle(true);
 
 export function mapStyleForTheme(resolvedTheme: string | undefined): string {
   return resolvedTheme === "dark" ? ELMA_MAP_STYLE_DARK : ELMA_MAP_STYLE_LIGHT;
