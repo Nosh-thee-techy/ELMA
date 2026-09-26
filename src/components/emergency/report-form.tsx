@@ -77,7 +77,7 @@ export function ReportForm({
   }
 
   const formBody = (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} className={cn("flex flex-col", embedded ? "gap-2.5" : "gap-4")}>
           <div className="flex flex-col gap-2">
             <Label htmlFor="category">Emergency type</Label>
             <Select
@@ -86,7 +86,7 @@ export function ReportForm({
                 if (value) setCategory(value);
               }}
             >
-              <SelectTrigger id="category" className="min-h-11 w-full">
+              <SelectTrigger id="category" className={cn("w-full", embedded ? "h-9" : "min-h-11")}>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
@@ -109,7 +109,7 @@ export function ReportForm({
                 name="county"
                 required
                 defaultValue={defaultCounty}
-                className="min-h-11"
+                className={embedded ? "h-9" : "min-h-11"}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -119,7 +119,7 @@ export function ReportForm({
                 name="ward"
                 required
                 placeholder="e.g. Nyalenda A"
-                className="min-h-11"
+                className={embedded ? "h-9" : "min-h-11"}
               />
             </div>
           </div>
@@ -131,8 +131,8 @@ export function ReportForm({
               name="description"
               required
               minLength={10}
-              rows={4}
-              className="min-h-[7rem] resize-y"
+              rows={embedded ? 2 : 4}
+              className={embedded ? "min-h-16 resize-none" : "min-h-[7rem] resize-y"}
               placeholder="Water at waist level on Ring Road near stage…"
             />
           </div>
@@ -143,7 +143,7 @@ export function ReportForm({
               id="contact"
               name="contact"
               inputMode="tel"
-              className="min-h-11"
+              className={embedded ? "h-9" : "min-h-11"}
               placeholder="07xx xxx xxx"
             />
           </div>
@@ -152,7 +152,10 @@ export function ReportForm({
             type="submit"
             variant="destructive"
             size="lg"
-            className="min-h-12 w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className={cn(
+              "w-full bg-destructive text-destructive-foreground hover:bg-destructive/90",
+              embedded ? "h-10" : "min-h-12",
+            )}
             disabled={false}
           >
             Send emergency report

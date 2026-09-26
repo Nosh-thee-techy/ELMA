@@ -1,8 +1,8 @@
 "use client";
 
 import { CitizenQwenPanel } from "@/components/app/citizen-qwen-panel";
+import { PhoneExtraTabs } from "@/components/app/phone-extra-tabs";
 import { ReportForm } from "@/components/emergency/report-form";
-import { AiSafetyNotice } from "@/components/app/ai-safety-notice";
 import { USSD_SHORT_CODE, type HazardId } from "@/lib/content/citizen-guides";
 import type { TravelMode } from "@/lib/ai/citizen-safety";
 import { DEMO_COUNTY } from "@/lib/data/seed";
@@ -76,41 +76,10 @@ export function CitizenSosTab() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="rounded-2xl bg-gradient-to-br from-red-600 to-red-800 p-4 text-white shadow-lg">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-red-100">Tab 1 · Report</p>
-        <p className="mt-1 font-display text-xl leading-tight">Send a ward-scoped SOS</p>
-        <p className="mt-2 text-xs leading-relaxed text-red-100/90">
-          Same queue as USSD and SMS. Responders see it on the dashboard; events go to the audit
-          trail.
-        </p>
-      </div>
-
-      <AiSafetyNotice />
-
-      <div>
-        <p className="text-xs font-bold text-muted-foreground">Are you in a vehicle right now?</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {(
-            [
-              ["unsure", "Skip"],
-              ["driving", "Yes, driving"],
-              ["walking", "On foot"],
-              ["stationary", "Sheltering"],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setTravel(id)}
-              className={`rounded-full px-3 py-1 text-[10px] font-bold ${
-                travel === id ? "bg-red-600 text-white" : "bg-muted"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+    <div className="flex flex-col gap-3 p-3">
+      <div className="rounded-2xl bg-gradient-to-br from-red-600 to-red-800 px-4 py-3 text-white">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-100">Report</p>
+        <p className="font-display text-lg leading-tight">Send a ward SOS</p>
       </div>
 
       <ReportForm
@@ -130,33 +99,77 @@ export function CitizenSosTab() {
         }}
       />
 
-      {followUp ? (
-        <CitizenQwenPanel
-          kind="sos_followup"
-          phase="during"
-          travel={travel}
-          hazard={followUp.category as HazardId}
-          ward={followUp.ward}
-          county={followUp.county}
-          description={followUp.description}
-          buttonLabel="While help is coming — Qwen tips (optional)"
-        />
-      ) : null}
-
-      <div className="rounded-xl border border-dashed border-border bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground">
-        <p className="font-bold text-foreground">No data bundle?</p>
-        <p className="mt-1">
-          Dial <span className="font-mono font-bold text-foreground">{USSD_SHORT_CODE}</span> → option{" "}
-          <strong>1</strong> to report. Or SMS{" "}
-          <span className="font-mono text-[10px]">REPORT|ward|category|details</span>.
-        </p>
-        <Link
-          href="/channels/phone"
-          className="mt-2 inline-block font-bold text-primary underline-offset-2 hover:underline"
-        >
-          Open USSD lab
-        </Link>
-      </div>
+      <PhoneExtraTabs
+        tabs={[
+          {
+            id: "moving",
+            label: "Moving",
+            content: (
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground">Are you in a vehicle?</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {(
+                    [
+                      ["unsure", "Skip"],
+                      ["driving", "Driving"],
+                      ["walking", "On foot"],
+                      ["stationary", "Sheltering"],
+                    ] as const
+                  ).map(([id, label]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setTravel(id)}
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${
+                        travel === id ? "bg-red-600 text-white" : "bg-background"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ),
+          },
+          {
+            id: "tips",
+            label: "Tips",
+            content: followUp ? (
+              <CitizenQwenPanel
+                kind="sos_followup"
+                phase="during"
+                travel={travel}
+                hazard={followUp.category as HazardId}
+                ward={followUp.ward}
+                county={followUp.county}
+                description={followUp.description}
+                buttonLabel="Qwen tips while help is coming"
+              />
+            ) : (
+              <p className="text-xs text-muted-foreground">Send the SOS first. Tips open after it lands.</p>
+            ),
+          },
+          {
+            id: "nodata",
+            label: "No data",
+            content: (
+              <div className="text-xs leading-relaxed text-muted-foreground">
+                <p>
+                  Dial <span className="font-mono font-bold text-foreground">{USSD_SHORT_CODE}</span> →{" "}
+                  <strong>1</strong> to report. Or SMS{" "}
+                  <span className="font-mono text-[10px]">REPORT|ward|category|details</span>.
+                </p>
+                <Link
+                  href="/channels/phone"
+                  className="mt-2 inline-block font-bold text-primary underline-offset-2 hover:underline"
+                >
+                  Open USSD lab
+                </Link>
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

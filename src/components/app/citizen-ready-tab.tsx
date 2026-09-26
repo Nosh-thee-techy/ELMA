@@ -1,7 +1,7 @@
 "use client";
 
-import { AiSafetyNotice } from "@/components/app/ai-safety-notice";
 import { CitizenQwenPanel } from "@/components/app/citizen-qwen-panel";
+import { PhoneExtraTabs } from "@/components/app/phone-extra-tabs";
 import { readCitizenWard, readLastReport } from "@/components/app/citizen-sos-tab";
 import type { SafetyPhase } from "@/lib/ai/citizen-safety";
 import { DEMO_COUNTY } from "@/lib/data/seed";
@@ -55,17 +55,13 @@ export function CitizenReadyTab() {
   const done = preparednessChecklist.filter((c) => checks[c.id]).length;
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-3 p-3">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700 dark:text-violet-300">
-          Tab 3 · Ready
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700 dark:text-violet-300">
+          Ready
         </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Before the rains, and after — plans, kits, and recovery. AI helps wording, not aid decisions.
-        </p>
+        <p className="text-sm font-extrabold">Go-bag and plan</p>
       </div>
-
-      <AiSafetyNotice />
 
       <div className="flex gap-2">
         {(["before", "after"] as const).map((p) => (
@@ -131,60 +127,72 @@ export function CitizenReadyTab() {
         </p>
       </section>
 
-      <CitizenQwenPanel
-        kind="ready"
-        phase={readyPhase}
-        ward={ward || "Kondele"}
-        county={DEMO_COUNTY}
-        checklistDone={preparednessChecklist.filter((c) => checks[c.id]).map((c) => c.label)}
-        buttonLabel={
-          readyPhase === "before"
-            ? "Qwen: prep plan for my ward"
-            : "Qwen: recovery steps (general)"
-        }
+      <PhoneExtraTabs
+        tabs={[
+          {
+            id: "tips",
+            label: "Tips",
+            content: (
+              <CitizenQwenPanel
+                kind="ready"
+                phase={readyPhase}
+                ward={ward || "Kondele"}
+                county={DEMO_COUNTY}
+                checklistDone={preparednessChecklist.filter((c) => checks[c.id]).map((c) => c.label)}
+                buttonLabel={readyPhase === "before" ? "Prep plan for my ward" : "Recovery steps"}
+                className="border-0 bg-transparent p-0"
+              />
+            ),
+          },
+          {
+            id: "after",
+            label: "After SOS",
+            content: lastReport ? (
+              <div className="text-xs">
+                <p className="font-bold">
+                  Ref <span className="font-mono">{lastReport.id.slice(0, 8)}</span>
+                </p>
+                <ul className="mt-2 flex list-disc flex-col gap-1 pl-4 text-muted-foreground">
+                  {(
+                    hazardGuides.find((g) => g.id === (lastReport.category as HazardId))?.after ??
+                    hazardGuides[0]?.after ??
+                    []
+                  ).map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">No SOS on this phone yet.</p>
+            ),
+          },
+          {
+            id: "web",
+            label: "Website",
+            content: (
+              <div className="flex flex-col gap-1.5 text-xs">
+                <Link
+                  href="/policy"
+                  className="inline-flex items-center gap-1 font-bold text-primary underline-offset-2 hover:underline"
+                >
+                  Policy in plain language
+                  <ExternalLink className="size-3" aria-hidden />
+                </Link>
+                <Link
+                  href="/explore"
+                  className="inline-flex items-center gap-1 font-bold text-primary underline-offset-2 hover:underline"
+                >
+                  County map
+                  <ExternalLink className="size-3" aria-hidden />
+                </Link>
+                <Link href="/" className="font-semibold text-muted-foreground underline-offset-2 hover:underline">
+                  Website home
+                </Link>
+              </div>
+            ),
+          },
+        ]}
       />
-
-      {lastReport ? (
-        <section className="rounded-xl bg-muted/50 p-3 text-xs">
-          <p className="font-bold">After your SOS</p>
-          <p className="mt-1 text-muted-foreground">
-            Report ref <span className="font-mono">{lastReport.id.slice(0, 8)}</span>. When safe, read
-            recovery steps for your hazard on the <strong>Now</strong> tab.
-          </p>
-          <ul className="mt-2 flex list-disc flex-col gap-1 pl-4 text-muted-foreground">
-            {(hazardGuides.find((g) => g.id === (lastReport.category as HazardId))?.after ??
-              hazardGuides[0]?.after ??
-              []
-            ).map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      <section className="flex flex-col gap-2 rounded-xl border border-teal-500/20 bg-teal-500/5 p-4 text-sm">
-        <p className="font-extrabold text-foreground">On the full website</p>
-        <Link
-          href="/policy"
-          className="inline-flex items-center gap-1 font-bold text-primary underline-offset-2 hover:underline"
-        >
-          Policy in plain language (Qwen)
-          <ExternalLink className="size-3.5" aria-hidden />
-        </Link>
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-1 font-bold text-primary underline-offset-2 hover:underline"
-        >
-          County map & transparency
-          <ExternalLink className="size-3.5" aria-hidden />
-        </Link>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground underline-offset-2 hover:underline"
-        >
-          Back to ELMA website home
-        </Link>
-      </section>
     </div>
   );
 }
