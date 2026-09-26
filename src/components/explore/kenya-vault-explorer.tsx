@@ -8,7 +8,7 @@ import { displayNameFromSlug } from "@/lib/data/counties";
 import type { CountyCardSummary, CountyPortalData } from "@/lib/data/county-finance";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function resolveSummary(slug: string | undefined, summaries: CountyCardSummary[]): CountyCardSummary | undefined {
   if (!slug) return undefined;
@@ -50,11 +50,27 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
     [summaries, selectedSlug],
   );
   const portal = selectedSlug ? portalBySlug[selectedSlug] : null;
+  const briefSectionRef = useRef<HTMLElement>(null);
+  const scrollToBriefRef = useRef(false);
+
+  const handleExpandBrief = useCallback(() => {
+    scrollToBriefRef.current = true;
+    setExpanded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!expanded || !portal || !scrollToBriefRef.current) return;
+    scrollToBriefRef.current = false;
+    briefSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [expanded, portal]);
 
   return (
     <div className="flex flex-col gap-10">
       <section className="relative overflow-hidden rounded-[2rem] bg-elma-navy shadow-2xl ring-1 ring-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#0d9488_0%,_transparent_55%)] opacity-40" aria-hidden />
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#0d9488_0%,_transparent_55%)] opacity-40"
+          aria-hidden
+        />
         <div className="elma-hero-grid pointer-events-none absolute inset-0 opacity-30" aria-hidden />
 
         <div className="relative border-b border-white/10 px-4 py-5 sm:px-6 lg:px-8">
@@ -108,7 +124,7 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
         </div>
 
         <div className="relative grid min-h-[min(72vh,780px)] lg:grid-cols-[1fr_min(400px,36vw)]">
-          <div className="relative flex min-h-[360px] flex-col p-4 sm:p-6 lg:min-h-[480px]">
+          <div className="relative z-0 flex min-h-[360px] min-w-0 flex-col overflow-hidden p-4 sm:p-6 lg:min-h-[480px]">
             <KenyaCountyMap
               counties={summaries}
               selectedSlug={selectedSlug}
@@ -120,7 +136,7 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
             />
           </div>
 
-          <aside className="flex flex-col border-t border-white/10 bg-slate-950/80 backdrop-blur-md lg:border-t-0 lg:border-l">
+          <aside className="relative z-10 flex flex-col border-t border-white/10 bg-slate-950/80 backdrop-blur-md lg:border-t-0 lg:border-l">
             {!selected ? (
               <div className="flex flex-1 flex-col justify-center p-8 text-center text-white/70">
                 <p className="font-semibold">Click a county on the map</p>
@@ -134,7 +150,7 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
                 selected={selected}
                 portal={portal}
                 onClear={() => setSelectedSlug(undefined)}
-                onExpand={() => setExpanded(true)}
+                onExpand={handleExpandBrief}
               />
             )}
           </aside>
@@ -142,7 +158,7 @@ export function KenyaVaultExplorer({ summaries, portalBySlug }: Props) {
       </section>
 
       {expanded && portal ? (
-        <section className="elma-card p-6 sm:p-8">
+        <section ref={briefSectionRef} className="elma-card scroll-mt-24 p-6 sm:p-8">
           <CountyPortalView data={portal} />
         </section>
       ) : null}

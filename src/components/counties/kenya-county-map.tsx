@@ -178,7 +178,7 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
   return (
     <div
       className={cn(
-        "elma-map relative min-h-[320px] flex-1 overflow-hidden rounded-2xl border border-white/15 bg-slate-900/40 shadow-inner ring-1 ring-white/10",
+        "elma-map relative isolate min-h-[320px] max-w-full flex-1 overflow-hidden rounded-2xl border border-white/15 bg-slate-900/40 shadow-inner ring-1 ring-white/10",
         className,
       )}
     >

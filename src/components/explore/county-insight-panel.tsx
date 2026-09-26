@@ -6,7 +6,7 @@ import {
 import type { CountyCardSummary } from "@/lib/data/county-finance";
 import type { CountyPortalData } from "@/lib/data/county-finance";
 import { cn, formatKes } from "@/lib/utils";
-import { Building2, Database, MapPin, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, Building2, Database, MapPin, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button-variants";
 
@@ -108,6 +108,10 @@ export function CountyInsightPanel({
                 <p className="mt-1 text-white/60">{portal.projects[0].title}</p>
               </div>
             ) : null}
+            <p className="mt-6 text-xs leading-relaxed text-white/50">
+              Sources: county ADP portals, e-procurement notices, and field verification labels in
+              the demo dataset — same shape as live Track 2 feeds.
+            </p>
           </>
         ) : (
           <p className="mt-6 rounded-xl bg-white/5 p-4 text-sm text-white/70">
@@ -132,38 +136,40 @@ export function CountyInsightPanel({
           </ul>
         </section>
 
-        <div className="mt-6 flex flex-col gap-2">
-          <Link
-            href={`/counties/${selected.slug}`}
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "rounded-xl border-white/20 bg-transparent font-bold text-white hover:bg-white/10",
-            )}
-          >
-            <MapPin data-icon="inline-start" />
-            County page
-          </Link>
+        <div className="relative z-20 mt-6 flex flex-col gap-2">
           <Link
             href="/policy"
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "rounded-xl border-white/20 bg-transparent font-bold text-white hover:bg-white/10",
+              "relative z-20 inline-flex rounded-xl border-white/20 bg-slate-950/90 font-bold text-white hover:bg-white/10",
             )}
           >
-            Policy (Qwen)
+            Policy in plain language
           </Link>
           {selected.hasDemoData ? (
             <button
               type="button"
               className={cn(
                 buttonVariants(),
-                "rounded-xl bg-emerald-500 font-bold hover:bg-emerald-400",
+                "relative z-20 inline-flex rounded-xl bg-emerald-500 font-bold hover:bg-emerald-400",
               )}
               onClick={onExpand}
             >
-              Full county brief below
+              Full county brief
+              <ArrowRight className="size-4" data-icon="inline-end" aria-hidden />
             </button>
-          ) : null}
+          ) : (
+            <Link
+              href={`/counties/${selected.slug}`}
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "relative z-20 inline-flex rounded-xl border-white/20 bg-slate-950/90 font-bold text-white hover:bg-white/10",
+              )}
+            >
+              <MapPin className="size-4" data-icon="inline-start" aria-hidden />
+              County page
+            </Link>
+          )}
         </div>
       </div>
     </>
