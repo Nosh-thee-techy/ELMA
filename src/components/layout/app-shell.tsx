@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import type { SessionProfile } from "@/lib/auth/session";
 import { resolvePublicNavGroups, roleNavLabel } from "@/lib/content/nav-by-role";
-import { fieldAppNavLink } from "@/lib/content/site";
+import { citizenAppNavLink } from "@/lib/content/site";
 import type { NavGroup } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
 import { Menu, WifiOff } from "lucide-react";
@@ -48,7 +48,8 @@ export function AppShell({
   if (
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/responder/login") ||
-    pathname.startsWith("/login")
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/app")
   ) {
     return <>{children}</>;
   }
@@ -78,6 +79,26 @@ export function AppShell({
               <ElmaLogo variant="light" />
             </Link>
             <div className="flex items-center gap-2 lg:hidden">
+              <Link
+                href={citizenAppNavLink.href}
+                className={cn(
+                  buttonVariants({ size: "sm" }),
+                  "h-10 rounded-full bg-red-500/90 px-3 text-xs font-bold text-white hover:bg-red-400",
+                )}
+              >
+                SOS
+              </Link>
+              {!isStaff ? (
+                <Link
+                  href="/responder/login"
+                  className={cn(
+                    buttonVariants({ size: "sm", variant: "outline" }),
+                    "h-10 rounded-full border-white/25 bg-white/10 px-3 text-xs font-bold text-white",
+                  )}
+                >
+                  Staff
+                </Link>
+              ) : null}
               <ThemeToggle inverted />
               <Button
                 type="button"
@@ -138,13 +159,13 @@ export function AppShell({
 
           <div className="hidden items-center gap-2 lg:flex lg:shrink-0 lg:justify-end">
             <Link
-              href={fieldAppNavLink.href}
+              href={citizenAppNavLink.href}
               className={cn(
                 buttonVariants({ size: "sm", variant: "outline" }),
                 "h-10 rounded-full border-white/25 bg-white/10 font-bold text-white hover:bg-white/20",
               )}
             >
-              {fieldAppNavLink.label}
+              {citizenAppNavLink.label}
             </Link>
             {isStaff && profile ? (
               <span className="hidden rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white lg:inline">

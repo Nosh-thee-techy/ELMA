@@ -9,7 +9,13 @@ import { z } from "zod";
 const bodySchema = z.object({
   role: z.enum(["RESPONDER", "ADMIN", "VERIFIER"]),
   email: z.string().email().optional(),
+  phone: z.string().min(9).max(20).optional(),
 });
+
+function emailFromPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  return `staff+${digits}@demo.elma.ke`;
+}
 
 export async function POST(request: Request) {
   const json: unknown = await request.json();
@@ -18,25 +24,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid login" }, { status: 400 });
   }
 
+  const email =
+    parsed.data.email ??
+    (parsed.data.phone ? emailFromPhone(parsed.data.phone) : undefined);
+
   let profile: SessionProfile;
   if (parsed.data.role === "ADMIN") {
     profile = {
       role: "ADMIN",
-      email: parsed.data.email ?? "admin@kisumu.go.ke",
+      email: email ?? "admin@kisumu.go.ke",
       county: "Kisumu",
       organization: "County Government",
     };
   } else if (parsed.data.role === "VERIFIER") {
     profile = {
       role: "VERIFIER",
-      email: parsed.data.email ?? "audit@elma.ke",
+      email: email ?? "audit@elma.ke",
       county: "National",
       organization: "Independent Audit Desk (demo)",
     };
   } else {
     profile = {
       role: "RESPONDER",
-      email: parsed.data.email ?? "responder@krcs.ke",
+      email: email ?? "responder@krcs.ke",
       county: "Kisumu",
       ward: "Kondele",
       organization: "Kenya Red Cross Society",

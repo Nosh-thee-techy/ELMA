@@ -2,7 +2,7 @@
   "name": "ELMA — Local Monitoring & Accountability",
   "short_name": "ELMA",
   "description": "County flood transparency and community emergency safety during El Niño.",
-  "start_url": "/",
+  "start_url": "/app",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#052e16",

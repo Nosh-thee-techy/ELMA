@@ -41,3 +41,29 @@ export function countyByName(name: string): KenyaCounty | undefined {
 export function slugFromCountyName(name: string): string {
   return countyByName(name)?.slug ?? name.toLowerCase().replace(/\s+/g, "-");
 }
+
+/** geoBoundaries ADM1 `shapeName` → ELMA slug */
+export function slugFromShapeName(shapeName: string): string {
+  return slugFromCountyName(shapeName.trim());
+}
+
+export function displayNameFromSlug(slug: string): string {
+  const c = countyBySlug(slug);
+  if (c) return c.name;
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/** Map bounds (WGS84) — keep view on Kenya */
+/** MapLibre maxBounds / fitBounds: west, south, east, north */
+export const KENYA_MAP_BOUNDS: [number, number, number, number] = [33.85, -4.85, 41.95, 5.05];
+
+export function kenyaMapBoundsSwNe(): [[number, number], [number, number]] {
+  const [west, south, east, north] = KENYA_MAP_BOUNDS;
+  return [
+    [west, south],
+    [east, north],
+  ];
+}

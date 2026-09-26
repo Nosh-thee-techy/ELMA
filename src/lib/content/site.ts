@@ -6,6 +6,7 @@ import {
   MapPin,
   Radio,
   ShieldCheck,
+  Siren,
   Smartphone,
 } from "lucide-react";
 
@@ -54,10 +55,18 @@ export const mainSiteNavLinks: NavLink[] = [
 /** @deprecated use mainSiteNavLinks */
 export const publicNavLinks = mainSiteNavLinks;
 
-export const fieldAppNavLink: NavLink = {
+/** Citizen SOS pocket app — report & guidance, not staff dashboard */
+export const citizenAppNavLink: NavLink = {
   href: "/app",
-  label: "Field app",
-  description: "Responder iPhone experience",
+  label: "SOS app",
+  description: "Report emergencies and get now / ready guidance on your phone",
+  icon: Siren,
+};
+
+/** @deprecated use citizenAppNavLink */
+export const fieldAppNavLink: NavLink = {
+  ...citizenAppNavLink,
+  label: "SOS app",
   icon: Smartphone,
 };
 
@@ -182,9 +191,9 @@ export const pageMeta: Record<string, PageMeta> = {
     audienceIds: ["low-connectivity", "residents"],
   },
   "/app": {
-    title: "ELMA field app",
-    summary: "Responder operations on your phone.",
-    audienceIds: ["committees"],
+    title: "ELMA Pocket",
+    summary: "SOS reporting, what to do now, and preparedness on your phone.",
+    audienceIds: ["residents", "low-connectivity"],
   },
   "/counties": {
     title: "Explore Kenya",

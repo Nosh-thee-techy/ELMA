@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import type { EmergencyReport } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -27,7 +29,15 @@ const categories = [
   { value: "other", label: "Other" },
 ] as const;
 
-export function ReportForm({ defaultCounty }: { defaultCounty: string }) {
+export function ReportForm({
+  defaultCounty,
+  embedded = false,
+  onSuccess,
+}: {
+  defaultCounty: string;
+  embedded?: boolean;
+  onSuccess?: (report: EmergencyReport) => void;
+}) {
   const [category, setCategory] = useState<string>("flooding");
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -52,8 +62,12 @@ export function ReportForm({ defaultCounty }: { defaultCounty: string }) {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Failed");
+      const body = (await res.json()) as { report: EmergencyReport };
       setStatus("done");
-      setMessage("Report received. Ward responders can see it in the queue.");
+      setMessage(
+        `Report received. Ref ${body.report.id.slice(0, 8)} — ward responders see it in the queue.`,
+      );
+      onSuccess?.(body.report);
       e.currentTarget.reset();
       setCategory("flooding");
     } catch {
@@ -62,33 +76,8 @@ export function ReportForm({ defaultCounty }: { defaultCounty: string }) {
     }
   }
 
-  if (status === "sending") {
-    return (
-      <Card className="border-border/80 shadow-sm">
-        <CardHeader>
-          <CardTitle className="font-heading text-xl">Sending report</CardTitle>
-          <CardDescription>Queuing your message for ward responders…</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <Skeleton className="h-11 w-full" />
-          <Skeleton className="h-11 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-12 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="border-border/80 shadow-sm">
-      <CardHeader>
-        <CardTitle className="font-heading text-xl">Emergency report</CardTitle>
-        <CardDescription>
-          Short form, thumb-friendly fields. Works in lite mode on slow networks.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={onSubmit} className="flex flex-col gap-5">
+  const formBody = (
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="category">Emergency type</Label>
             <Select
@@ -169,18 +158,53 @@ export function ReportForm({ defaultCounty }: { defaultCounty: string }) {
             Send emergency report
           </Button>
 
-          {message ? (
-            <Alert
-              variant={status === "error" ? "destructive" : "default"}
-              className={status === "done" ? "border-primary/30 bg-primary/5" : undefined}
-            >
-              {status === "done" ? <CheckCircle2 className="text-primary" /> : null}
-              {status === "error" ? <Loader2 className="opacity-0" aria-hidden /> : null}
-              <AlertDescription>{message}</AlertDescription>
-            </Alert>
-          ) : null}
-        </form>
-      </CardContent>
+      {message ? (
+        <Alert
+          variant={status === "error" ? "destructive" : "default"}
+          className={status === "done" ? "border-primary/30 bg-primary/5" : undefined}
+        >
+          {status === "done" ? <CheckCircle2 className="text-primary" /> : null}
+          {status === "error" ? <Loader2 className="opacity-0" aria-hidden /> : null}
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
+      ) : null}
+    </form>
+  );
+
+  if (status === "sending") {
+    const loading = (
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-11 w-full" />
+        <Skeleton className="h-11 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+    if (embedded) return loading;
+    return (
+      <Card className="border-border/80 shadow-sm">
+        <CardHeader>
+          <CardTitle className="font-heading text-xl">Sending report</CardTitle>
+          <CardDescription>Queuing your message for ward responders…</CardDescription>
+        </CardHeader>
+        <CardContent>{loading}</CardContent>
+      </Card>
+    );
+  }
+
+  if (embedded) {
+    return <div className={cn("rounded-xl border border-border/80 bg-card p-3 shadow-sm")}>{formBody}</div>;
+  }
+
+  return (
+    <Card className="border-border/80 shadow-sm">
+      <CardHeader>
+        <CardTitle className="font-heading text-xl">Emergency report</CardTitle>
+        <CardDescription>
+          Short form, thumb-friendly fields. Works in lite mode on slow networks.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>{formBody}</CardContent>
     </Card>
   );
 }
