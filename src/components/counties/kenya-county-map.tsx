@@ -194,10 +194,11 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
         className,
       )}
     >
-      <Map
-        ref={mapRef}
-        onLoad={() => setMapReady(true)}
-        onError={() => setUseMinimalBasemap(true)}
+      <div className="absolute inset-0">
+        <Map
+          ref={mapRef}
+          onLoad={() => setMapReady(true)}
+          onError={() => setUseMinimalBasemap(true)}
         initialViewState={{
           latitude: 0.05,
           longitude: 37.9,
@@ -250,9 +251,10 @@ export function KenyaCountyMap({ counties, selectedSlug, onSelect, className }: 
             />
           </Source>
         ) : null}
-      </Map>
+        </Map>
+      </div>
 
-      <div className="pointer-events-none absolute left-3 top-3 max-w-[14rem] rounded-xl bg-white/95 px-3 py-2 text-[10px] font-bold leading-snug text-slate-700 shadow-md ring-1 ring-black/5 dark:bg-slate-900/90 dark:text-slate-200">
+      <div className="pointer-events-none absolute left-3 top-3 z-10 max-w-[14rem] rounded-xl bg-white/95 px-3 py-2 text-[10px] font-bold leading-snug text-slate-700 shadow-md ring-1 ring-black/5 dark:bg-slate-900/90 dark:text-slate-200">
         Kenya · 47 counties
         <span className="mt-0.5 block font-normal text-slate-500 dark:text-slate-400">
           {geoError
