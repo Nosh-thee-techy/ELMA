@@ -41,6 +41,25 @@ export function getServerSession(): {
   return { active, profile };
 }
 
+export function canAccessReport(
+  profile: SessionProfile,
+  report: { county: string; ward: string },
+): boolean {
+  if (profile.role === "VERIFIER") return true;
+  if (profile.role === "ADMIN") {
+    return profile.county === report.county || profile.county === "National";
+  }
+  return (
+    profile.role === "RESPONDER" &&
+    profile.county === report.county &&
+    profile.ward === report.ward
+  );
+}
+
+export function canUpdateReportStatus(profile: SessionProfile): boolean {
+  return profile.role === "RESPONDER" || profile.role === "ADMIN";
+}
+
 export function canEditShelter(
   profile: SessionProfile,
   shelter: { county: string; ward: string },

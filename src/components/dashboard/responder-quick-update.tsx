@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { Shelter, ShelterOperationalStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -24,6 +24,13 @@ const STATUS_OPTIONS: ShelterOperationalStatus[] = [
   "CLOSED",
 ];
 
+const STATUS_STYLE: Record<ShelterOperationalStatus, string> = {
+  OPEN: "bg-emerald-600 text-white shadow-emerald-900/20",
+  NEAR_CAPACITY: "bg-amber-500 text-white shadow-amber-900/20",
+  FULL: "bg-red-600 text-white shadow-red-900/20",
+  CLOSED: "bg-slate-600 text-white",
+};
+
 export function ResponderQuickUpdate({ shelter }: { shelter: Shelter }) {
   const router = useRouter();
   const [occupancy, setOccupancy] = useState(shelter.occupancy);
@@ -35,6 +42,8 @@ export function ResponderQuickUpdate({ shelter }: { shelter: Shelter }) {
   const [captureMeta, setCaptureMeta] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fillPct = shelter.capacity > 0 ? Math.min(100, (occupancy / shelter.capacity) * 100) : 0;
 
   async function save(open: boolean) {
     setLoading(true);
@@ -69,153 +78,195 @@ export function ResponderQuickUpdate({ shelter }: { shelter: Shelter }) {
   }
 
   return (
-    <div className="elma-card flex flex-col gap-4 p-4 sm:p-5">
-      <div>
-        <p className="font-extrabold text-elma-navy dark:text-slate-50">{shelter.name}</p>
-        <p className="text-xs text-muted-foreground">
-          {shelter.ward} · max {shelter.capacity}
-        </p>
-      </div>
-
-      <div className="flex items-center justify-between gap-2">
-        <Button
-          type="button"
-          size="lg"
-          variant="outline"
-          className="min-h-14 flex-1 rounded-2xl text-lg font-extrabold"
-          disabled={loading}
-          onClick={() => bump(-10)}
-        >
-          −10
-        </Button>
-        <p className="min-w-[4rem] text-center text-2xl font-extrabold tabular-nums">{occupancy}</p>
-        <Button
-          type="button"
-          size="lg"
-          variant="outline"
-          className="min-h-14 flex-1 rounded-2xl text-lg font-extrabold"
-          disabled={loading}
-          onClick={() => bump(10)}
-        >
-          +10
-        </Button>
-      </div>
-
-      <Button
-        type="button"
-        variant="destructive"
-        className="min-h-12 rounded-2xl font-bold"
-        disabled={loading}
-        onClick={() => {
-          setOccupancy(shelter.capacity);
-          setStatus("FULL");
-        }}
-      >
-        Set full
-      </Button>
-
-      <div className="flex flex-wrap gap-2">
-        {STATUS_OPTIONS.map((s) => (
-          <button
-            key={s}
-            type="button"
-            disabled={loading}
-            onClick={() => setStatus(s)}
+    <article className="elma-card overflow-hidden ring-1 ring-border/80">
+      <div className="h-1 bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600" aria-hidden />
+      <div className="flex flex-col gap-5 p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-lg font-extrabold tracking-tight text-elma-navy dark:text-slate-50">
+              {shelter.name}
+            </p>
+            <p className="mt-0.5 text-xs font-medium text-muted-foreground">
+              {shelter.ward} · capacity {shelter.capacity}
+            </p>
+          </div>
+          <span
             className={cn(
-              "rounded-full px-3 py-2 text-xs font-bold uppercase tracking-wide",
-              status === s
-                ? "bg-emerald-600 text-white"
-                : "bg-muted text-muted-foreground",
+              "rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide shadow-sm",
+              STATUS_STYLE[status],
             )}
           >
-            {s.replace("_", " ")}
-          </button>
-        ))}
-      </div>
-
-      <fieldset className="flex flex-col gap-2">
-        <Label className="text-xs font-bold uppercase text-muted-foreground">Urgent needs</Label>
-        <div className="flex flex-wrap gap-2">
-          {NEED_OPTIONS.map((need) => {
-            const on = needs.includes(need);
-            return (
-              <button
-                key={need}
-                type="button"
-                disabled={loading}
-                onClick={() =>
-                  setNeeds((n) => (on ? n.filter((x) => x !== need) : [...n, need]))
-                }
-                className={cn(
-                  "rounded-full px-3 py-1.5 text-xs font-semibold",
-                  on ? "bg-amber-100 text-amber-950 dark:bg-amber-950 dark:text-amber-100" : "bg-muted",
-                )}
-              >
-                {need}
-              </button>
-            );
-          })}
+            {status.replace("_", " ")}
+          </span>
         </div>
-      </fieldset>
 
-      <label className="flex flex-col gap-1 text-sm font-semibold">
-        Ground photo
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="text-xs file:mr-2 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-3 file:py-2 file:font-bold file:text-white"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-              const dataUrl = typeof reader.result === "string" ? reader.result : "";
-              if (!dataUrl) return;
-              setMediaUrls((urls) => [...urls, dataUrl].slice(-3));
-              const stamp = new Date().toISOString();
-              if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                  (pos) => {
-                    setCaptureMeta(
-                      `Captured ${stamp} · GPS ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} ±${Math.round(pos.coords.accuracy)}m`,
-                    );
-                  },
-                  () => setCaptureMeta(`Captured ${stamp} · GPS unavailable`),
-                  { enableHighAccuracy: true, timeout: 8000 },
-                );
-              } else {
-                setCaptureMeta(`Captured ${stamp}`);
-              }
-            };
-            reader.readAsDataURL(file);
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between text-xs font-bold text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <Users className="size-3.5" aria-hidden />
+              Occupancy
+            </span>
+            <span className="tabular-nums text-foreground">
+              {occupancy} / {shelter.capacity}
+            </span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-muted">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all duration-300",
+                fillPct >= 95 ? "bg-red-500" : fillPct >= 75 ? "bg-amber-500" : "bg-emerald-500",
+              )}
+              style={{ width: `${fillPct}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            type="button"
+            size="lg"
+            variant="outline"
+            className="min-h-14 flex-1 rounded-2xl border-2 text-lg font-extrabold"
+            disabled={loading}
+            onClick={() => bump(-10)}
+          >
+            −10
+          </Button>
+          <p className="min-w-[4.5rem] text-center text-3xl font-extrabold tabular-nums tracking-tight">
+            {occupancy}
+          </p>
+          <Button
+            type="button"
+            size="lg"
+            variant="outline"
+            className="min-h-14 flex-1 rounded-2xl border-2 text-lg font-extrabold"
+            disabled={loading}
+            onClick={() => bump(10)}
+          >
+            +10
+          </Button>
+        </div>
+
+        <Button
+          type="button"
+          variant="destructive"
+          className="min-h-11 rounded-xl font-bold"
+          disabled={loading}
+          onClick={() => {
+            setOccupancy(shelter.capacity);
+            setStatus("FULL");
           }}
-        />
-        {captureMeta ? (
-          <p className="text-xs text-muted-foreground">{captureMeta}</p>
-        ) : null}
-      </label>
+        >
+          Mark at capacity
+        </Button>
 
-      <div className="grid grid-cols-2 gap-2">
-        <Button
-          type="button"
-          className="min-h-12 rounded-2xl font-bold"
-          disabled={loading}
-          onClick={() => void save(true)}
-        >
-          {loading ? <Loader2 className="animate-spin" /> : "Save open"}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="min-h-12 rounded-2xl font-bold"
-          disabled={loading}
-          onClick={() => void save(false)}
-        >
-          Mark closed
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {STATUS_OPTIONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              disabled={loading}
+              onClick={() => setStatus(s)}
+              className={cn(
+                "rounded-full px-3 py-2 text-[10px] font-bold uppercase tracking-wide transition-all",
+                status === s
+                  ? STATUS_STYLE[s]
+                  : "bg-muted text-muted-foreground hover:bg-muted/80",
+              )}
+            >
+              {s.replace("_", " ")}
+            </button>
+          ))}
+        </div>
+
+        <fieldset className="flex flex-col gap-2">
+          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+            Urgent needs
+          </Label>
+          <div className="flex flex-wrap gap-2">
+            {NEED_OPTIONS.map((need) => {
+              const on = needs.includes(need);
+              return (
+                <button
+                  key={need}
+                  type="button"
+                  disabled={loading}
+                  onClick={() =>
+                    setNeeds((n) => (on ? n.filter((x) => x !== need) : [...n, need]))
+                  }
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+                    on
+                      ? "bg-amber-100 text-amber-950 ring-1 ring-amber-300/50 dark:bg-amber-950 dark:text-amber-100"
+                      : "bg-muted/80 text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  {need}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
+          Ground photo
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="text-xs file:mr-2 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-emerald-600 file:to-teal-600 file:px-4 file:py-2.5 file:font-bold file:text-white"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = () => {
+                const dataUrl = typeof reader.result === "string" ? reader.result : "";
+                if (!dataUrl) return;
+                setMediaUrls((urls) => [...urls, dataUrl].slice(-3));
+                const stamp = new Date().toISOString();
+                if ("geolocation" in navigator) {
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                      setCaptureMeta(
+                        `Captured ${stamp} · GPS ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} ±${Math.round(pos.coords.accuracy)}m`,
+                      );
+                    },
+                    () => setCaptureMeta(`Captured ${stamp} · GPS unavailable`),
+                    { enableHighAccuracy: true, timeout: 8000 },
+                  );
+                } else {
+                  setCaptureMeta(`Captured ${stamp}`);
+                }
+              };
+              reader.readAsDataURL(file);
+            }}
+          />
+          {captureMeta ? (
+            <p className="text-xs font-normal text-muted-foreground">{captureMeta}</p>
+          ) : null}
+        </label>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            type="button"
+            className="min-h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-bold shadow-md hover:from-emerald-500 hover:to-teal-500"
+            disabled={loading}
+            onClick={() => void save(true)}
+          >
+            {loading ? <Loader2 className="animate-spin" /> : "Save open"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-12 rounded-xl font-bold"
+            disabled={loading}
+            onClick={() => void save(false)}
+          >
+            Mark closed
+          </Button>
+        </div>
+        {error ? <p className="text-sm font-semibold text-destructive">{error}</p> : null}
       </div>
-      {error ? <p className="text-sm font-semibold text-destructive">{error}</p> : null}
-    </div>
+    </article>
   );
 }

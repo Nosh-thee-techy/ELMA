@@ -17,7 +17,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | Area | Route | Notes |
 |------|--------|--------|
 | Transparency | `/transparency` | Ward projects, paper vs field, **MapLibre map** |
-| Policy AI | `/policy` | Gemma via OpenRouter (+ offline fallback) |
+| Policy AI | `/policy` | Qwen via ModelScope (+ OpenRouter or offline fallback) |
+| Voice & text assistant | `/channels/phone` → Voice tab | Qwen chat + browser speech in/out |
 | Emergency | `/emergency` | Web form + **USSD stub** `POST /api/ussd` |
 | Alerts | `/alerts` | Verified vs rumor feed with motion |
 | Shelters | `/shelters` | Occupancy + map |

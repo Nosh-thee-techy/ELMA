@@ -22,7 +22,13 @@ export function ElmaLogo({
         aria-hidden
         className="shrink-0"
       >
-        <rect width="36" height="36" rx="10" className="fill-emerald-600" />
+        <defs>
+          <linearGradient id="elma-mark" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#10b981" />
+            <stop offset="1" stopColor="#0d9488" />
+          </linearGradient>
+        </defs>
+        <rect width="36" height="36" rx="10" fill="url(#elma-mark)" />
         <path
           d="M18 8L26 12V19C26 24 22 27.5 18 29C14 27.5 10 24 10 19V12L18 8Z"
           className="fill-white/95"

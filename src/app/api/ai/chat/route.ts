@@ -1,20 +1,26 @@
-import { explainPolicy } from "@/lib/ai/explain-policy";
-import { isQwenModelId, QWEN_MODEL_IDS } from "@/lib/ai/qwen-models";
+import { elmaAssistantReply, type AssistantMode } from "@/lib/ai/elma-assistant";
 import { getQwenApiKey } from "@/lib/ai/qwen";
+import { isQwenModelId, QWEN_MODEL_IDS } from "@/lib/ai/qwen-models";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+const turnSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1).max(4000),
+});
+
 const bodySchema = z.object({
-  policyText: z.string().min(40).max(8000),
-  ward: z.string().min(2).max(80),
+  messages: z.array(turnSchema).min(1).max(24),
+  ward: z.string().min(2).max(80).optional(),
+  mode: z.enum(["chat", "voice"]).optional(),
   model: z.string().optional(),
 });
 
 export async function GET() {
   return NextResponse.json({
     qwenConfigured: Boolean(getQwenApiKey()),
-    openRouterConfigured: Boolean(process.env.OPENROUTER_API_KEY),
     qwenModels: QWEN_MODEL_IDS,
+    modes: ["chat", "voice"] as AssistantMode[],
   });
 }
 
@@ -30,14 +36,14 @@ export async function POST(request: Request) {
       ? parsed.data.model
       : undefined;
 
-  const result = await explainPolicy(
-    parsed.data.policyText,
-    parsed.data.ward,
-    { qwenModel },
-  );
+  const result = await elmaAssistantReply(parsed.data.messages, {
+    mode: parsed.data.mode ?? "chat",
+    ward: parsed.data.ward,
+    qwenModel,
+  });
 
   return NextResponse.json({
-    explanation: result.explanation,
+    message: result.content,
     provider: result.provider,
     model: result.model,
   });

@@ -1,4 +1,5 @@
 import { IphoneShell } from "@/components/app/iphone-shell";
+import { PageHero } from "@/components/layout/page-hero";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { getServerSession } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
@@ -8,49 +9,53 @@ export default function FieldAppPage() {
   const { active, profile } = getServerSession();
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-10 py-4">
-      <section className="flex flex-col gap-3 text-center sm:text-left">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-400">
-          Not on the public website
-        </p>
-        <h1 className="text-balance text-3xl font-extrabold text-elma-navy dark:text-slate-50">
-          ELMA field app
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          Shelter triage, reports, and alerts live here — on a phone, not scattered across the main
-          site. Sign in to use the live dashboard inside your ward scope.
-        </p>
-        <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
+    <div className="mx-auto flex max-w-5xl flex-col gap-10 py-2">
+      <PageHero
+        variant="navy"
+        eyebrow="Field operations"
+        title="ELMA on your phone"
+        description="Shelter triage, reports, and alerts — scoped to your ward. The public website stays for transparency; this is where responders work."
+      >
+        <div className="mt-2 flex flex-wrap gap-3">
           {active && profile ? (
             <Link
               href="/dashboard"
-              className={cn(buttonVariants({ size: "lg" }), "rounded-full font-bold")}
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "rounded-full bg-emerald-500 font-bold hover:bg-emerald-400",
+              )}
             >
               Open live dashboard
             </Link>
           ) : (
             <Link
               href="/responder/login?next=/dashboard"
-              className={cn(buttonVariants({ size: "lg" }), "rounded-full font-bold")}
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "rounded-full bg-emerald-500 font-bold hover:bg-emerald-400",
+              )}
             >
               Staff sign in
             </Link>
           )}
           <Link
             href="/explore"
-            className={cn(buttonVariants({ size: "lg", variant: "outline" }), "rounded-full font-bold")}
+            className={cn(
+              buttonVariants({ size: "lg", variant: "outline" }),
+              "rounded-full border-white/25 bg-white/10 font-bold text-white hover:bg-white/20",
+            )}
           >
-            Back to public map
+            Public map
           </Link>
         </div>
-      </section>
+      </PageHero>
 
       <div className="grid items-start gap-10 lg:grid-cols-2">
         <IphoneShell label="Operations">
           <div className="flex flex-col gap-3 p-4">
             <p className="text-sm font-extrabold">Shelter triage</p>
             <p className="text-xs text-muted-foreground">
-              ±10 occupancy, set full, urgent needs — built for thumb and bad networks.
+              ±10 occupancy, capacity bar, urgent needs — thumb-first for bad networks.
             </p>
             <div className="grid grid-cols-3 gap-2">
               {["−10", "47", "+10"].map((t) => (
@@ -73,20 +78,22 @@ export default function FieldAppPage() {
 
         <IphoneShell label="Channels">
           <div className="flex flex-col gap-3 p-4">
-            <p className="text-sm font-extrabold">USSD · SMS · alerts</p>
+            <p className="text-sm font-extrabold">USSD · SMS · Qwen voice</p>
             <p className="text-xs text-muted-foreground">
-              The public site keeps policy and the Kenya map. Reporting and ops stay in the app.
+              Citizens use the public channels lab; responders sync the same backend here.
             </p>
             <ul className="flex flex-col gap-2 text-sm">
               <li>
-                <Link href="/channels/phone" className="font-bold text-primary underline-offset-2 hover:underline">
+                <Link
+                  href="/channels/phone"
+                  className="font-bold text-primary underline-offset-2 hover:underline"
+                >
                   Try USSD *384*253#
-                </Link>{" "}
-                (also on web for demo)
+                </Link>
               </li>
               <li>
                 <Link href="/policy" className="font-bold text-primary underline-offset-2 hover:underline">
-                  Read relief policy
+                  Policy plain language
                 </Link>
               </li>
             </ul>

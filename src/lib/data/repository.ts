@@ -1,6 +1,12 @@
 import { mitigationProjects } from "@/lib/data/seed";
 import { listSheltersMutable } from "@/lib/store/shelter-store";
-import { addReport, listAlerts, listReports, setAlertVerification } from "@/lib/store/memory";
+import {
+  addReport,
+  listAlerts,
+  listReports,
+  setAlertVerification,
+  updateReportStatus as updateReportStatusMemory,
+} from "@/lib/store/memory";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { DataSourceId } from "@/lib/data/source-catalog";
 import type {
@@ -263,6 +269,37 @@ export async function createEmergencyReport(
     county: String(r.county),
     contact: r.contact != null ? String(r.contact) : undefined,
     status: "open",
+  };
+}
+
+export async function updateEmergencyReportStatus(
+  id: string,
+  status: EmergencyReport["status"],
+): Promise<EmergencyReport | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return updateReportStatusMemory(id, status);
+
+  const { data, error } = await supabase
+    .from("emergency_reports")
+    .update({ status })
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error || !data) return updateReportStatusMemory(id, status);
+
+  const r = data as Record<string, unknown>;
+  return {
+    id: String(r.id),
+    createdAt: String(r.created_at),
+    category: r.category as EmergencyReport["category"],
+    description: String(r.description),
+    ward: String(r.ward),
+    county: String(r.county),
+    contact: r.contact != null ? String(r.contact) : undefined,
+    lat: r.lat != null ? Number(r.lat) : undefined,
+    lng: r.lng != null ? Number(r.lng) : undefined,
+    status: r.status as EmergencyReport["status"],
   };
 }
 

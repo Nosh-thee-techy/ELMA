@@ -1,6 +1,13 @@
 import { KenyaVaultExplorer } from "@/components/explore/kenya-vault-explorer";
 import { KENYA_COUNTIES } from "@/lib/data/counties";
 import { buildCountyCardSummaries, getCountyPortalData } from "@/lib/data/county-finance";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Explore Kenya · ELMA",
+  description:
+    "Interactive map of county disaster funds, contractors, and published transparency data.",
+};
 
 export default async function ExplorePage() {
   const summaries = buildCountyCardSummaries(KENYA_COUNTIES);

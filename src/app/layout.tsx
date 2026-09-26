@@ -5,13 +5,20 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { getServerSession } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["500", "600", "700", "800"],
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["600", "700"],
   display: "swap",
 });
 
@@ -42,7 +49,7 @@ export default function RootLayout({
   const { active, profile } = getServerSession();
 
   return (
-    <html lang="en" className={cn(jakarta.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn(jakarta.variable, fraunces.variable)} suppressHydrationWarning>
       <body className="min-h-screen font-sans font-medium">
         <ThemeProvider>
           <LowBandwidthProvider>

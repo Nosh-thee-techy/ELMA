@@ -39,6 +39,16 @@ export function addReport(
   return report;
 }
 
+export function updateReportStatus(
+  id: string,
+  status: EmergencyReport["status"],
+): EmergencyReport | null {
+  const report = memory().reports.find((r) => r.id === id);
+  if (!report) return null;
+  report.status = status;
+  return report;
+}
+
 export function listAlerts(): CommunityAlert[] {
   return [...memory().alerts].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

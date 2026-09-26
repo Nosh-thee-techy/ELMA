@@ -1,5 +1,6 @@
 import { EmptyState } from "@/components/feedback/empty-state";
 import { FundFlowPipeline } from "@/components/counties/fund-flow-pipeline";
+import { PageHero } from "@/components/layout/page-hero";
 import { ProjectCard } from "@/components/transparency/project-card";
 import { getMitigationProjects } from "@/lib/data/repository";
 import { formatKes } from "@/lib/utils";
@@ -13,14 +14,12 @@ export default async function TendersPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Tenders</p>
-        <h1 className="mt-2 text-3xl font-extrabold text-elma-navy">Contracts & field progress</h1>
-        <p className="mt-2 max-w-2xl text-muted-foreground">
-          Ward-level procurement across demo counties — allocated amounts, contractors, and paper vs
-          field status.
-        </p>
-      </section>
+      <PageHero
+        variant="minimal"
+        eyebrow="Procurement"
+        title="Contracts & field progress"
+        description="Ward-level tenders across demo counties — allocated amounts, contractors, and paper vs field verification."
+      />
 
       <FundFlowPipeline compact />
 
@@ -42,7 +41,7 @@ export default async function TendersPage() {
           title="No tenders published yet"
           description="When counties publish ward-level data, it will appear here."
           actionLabel="Browse counties"
-          actionHref="/counties"
+          actionHref="/explore"
         />
       ) : (
         <ul className="flex flex-col gap-4">

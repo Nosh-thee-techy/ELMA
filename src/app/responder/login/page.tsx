@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHero } from "@/components/layout/page-hero";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { Loader2, Shield } from "lucide-react";
@@ -35,47 +36,61 @@ function ResponderLoginForm() {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 py-8">
-      <div className="elma-card p-8">
-        <p className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
-          <Shield className="size-4" aria-hidden />
-          First responder access
-        </p>
-        <h1 className="mt-2 text-2xl font-extrabold">Operational dashboard</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Demo login for ward responders and county admins. Update shelter capacity, log urgent
-          needs, and upload field photos.
-        </p>
-        <div className="mt-4 flex gap-2">
-          {(["RESPONDER", "ADMIN", "VERIFIER"] as const).map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setRole(r)}
-              className={cn(
-                "flex-1 rounded-xl px-2 py-2 text-[10px] font-bold uppercase tracking-wide sm:text-xs",
-                role === r ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground",
-              )}
-            >
-              {r === "RESPONDER" ? "Responder" : r === "ADMIN" ? "Admin" : "Verifier"}
-            </button>
-          ))}
+    <div className="elma-page-bg flex min-h-screen flex-col items-center justify-center px-4 py-12">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6">
+        <PageHero
+          variant="navy"
+          eyebrow="Secure access"
+          title="Operational dashboard"
+          description="Demo roles for ward responders, county admins, and verifiers."
+          className="text-center sm:text-left"
+        />
+
+        <div className="elma-glass-panel p-6 sm:p-8">
+          <p className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+            <Shield className="size-4" aria-hidden />
+            Choose a demo role
+          </p>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {(["RESPONDER", "ADMIN", "VERIFIER"] as const).map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRole(r)}
+                className={cn(
+                  "rounded-xl px-2 py-2.5 text-[10px] font-bold uppercase tracking-wide sm:text-xs",
+                  role === r
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md"
+                    : "bg-muted text-muted-foreground",
+                )}
+              >
+                {r === "RESPONDER" ? "Responder" : r === "ADMIN" ? "Admin" : "Verifier"}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => void signIn()}
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "mt-6 w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-bold",
+            )}
+          >
+            {loading ? <Loader2 className="animate-spin" data-icon="inline-start" /> : null}
+            Enter dashboard
+          </button>
+          {error ? <p className="mt-3 text-sm font-semibold text-destructive">{error}</p> : null}
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            <Link href="/" className="font-semibold text-primary underline-offset-2 hover:underline">
+              Back to public site
+            </Link>
+            {" · "}
+            <Link href="/explore" className="font-semibold text-primary underline-offset-2 hover:underline">
+              Explore map
+            </Link>
+          </p>
         </div>
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => void signIn()}
-          className={cn(buttonVariants({ size: "lg" }), "mt-6 w-full rounded-xl font-bold")}
-        >
-          {loading ? <Loader2 className="animate-spin" data-icon="inline-start" /> : null}
-          Enter dashboard
-        </button>
-        {error ? <p className="mt-3 text-sm font-semibold text-destructive">{error}</p> : null}
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          <Link href="/" className="font-semibold text-primary underline-offset-2 hover:underline">
-            Back to public portal
-          </Link>
-        </p>
       </div>
     </div>
   );

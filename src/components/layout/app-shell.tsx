@@ -58,13 +58,21 @@ export function AppShell({
     pathname === "/explore" ||
     pathname === "/app" ||
     pathname === "/policy" ||
+    pathname === "/transparency" ||
+    pathname === "/shelters" ||
+    pathname.startsWith("/channels") ||
+    pathname.startsWith("/counties/");
+  const isMarketing =
+    pathname === "/" ||
+    pathname === "/explore" ||
+    pathname === "/app" ||
+    pathname === "/policy" ||
     pathname.startsWith("/channels");
-  const isMarketing = pathname === "/" || pathname === "/explore" || pathname === "/app";
 
   return (
-    <div className="min-h-screen bg-background p-3 sm:p-4 lg:p-5">
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-4 lg:gap-5">
-        <header className="elma-header sticky top-3 z-40 flex flex-col gap-3 rounded-2xl px-3 py-3 shadow-lg sm:px-4 lg:top-5 lg:flex-row lg:items-center lg:gap-4 lg:py-2.5">
+    <div className="elma-page-bg min-h-screen p-3 sm:p-4 lg:p-6">
+      <div className="mx-auto flex max-w-[1680px] flex-col gap-5 lg:gap-6">
+        <header className="elma-header sticky top-3 z-40 flex flex-col gap-3 rounded-2xl px-3 py-3 sm:px-4 lg:top-6 lg:flex-row lg:items-center lg:gap-4 lg:py-2.5">
           <div className="flex items-center justify-between gap-3 lg:shrink-0">
             <Link href="/" className="px-1">
               <ElmaLogo variant="light" />
@@ -175,8 +183,8 @@ export function AppShell({
 
         <div
           className={cn(
-            "flex flex-1 flex-col gap-6 rounded-2xl p-4 sm:p-6 lg:p-8",
-            isMarketing ? "bg-transparent" : "bg-card/60 ring-1 ring-border/60",
+            "flex flex-1 flex-col gap-6",
+            isMarketing ? "px-0 py-0" : "elma-glass-panel rounded-[1.75rem] p-5 sm:p-7 lg:p-8",
           )}
         >
           {!hidePageTitle ? <PageTopBar showSearch={false} /> : null}

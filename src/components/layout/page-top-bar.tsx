@@ -11,7 +11,7 @@ export function PageTopBar({ showSearch = true }: { showSearch?: boolean }) {
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+      <h1 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">
         {meta.title}
       </h1>
       {showSearch ? (

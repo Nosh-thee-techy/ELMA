@@ -1,4 +1,5 @@
 import { createEmergencyReport, getEmergencyReports } from "@/lib/data/repository";
+import { appendAuditEvent } from "@/lib/store/audit-store";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -35,5 +36,14 @@ export async function POST(request: Request) {
   }
 
   const report = await createEmergencyReport(parsed.data);
+  appendAuditEvent({
+    kind: "report_created",
+    summary: `Web report ${report.id.slice(0, 8)} (${report.category})`,
+    actor: parsed.data.contact ? `Web ${parsed.data.contact.slice(-4)}` : "Web citizen",
+    county: report.county,
+    ward: report.ward,
+    relatedId: report.id,
+    metadata: { channel: "web" },
+  });
   return NextResponse.json({ report }, { status: 201 });
 }

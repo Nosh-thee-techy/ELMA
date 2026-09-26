@@ -1,4 +1,5 @@
 import { FundFlowPipeline } from "@/components/counties/fund-flow-pipeline";
+import { PageHero } from "@/components/layout/page-hero";
 import { CountyDataBadge } from "@/components/ui/county-data-badge";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { KENYA_COUNTIES } from "@/lib/data/counties";
@@ -11,14 +12,12 @@ export default function ReleasesPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Fund releases</p>
-        <h1 className="mt-2 text-3xl font-extrabold text-elma-navy">What reached each county</h1>
-        <p className="mt-2 max-w-2xl text-muted-foreground">
-          Treasury and programme releases published for the OND El Niño window (demo figures). Open a
-          county for spending breakdown and tenders.
-        </p>
-      </section>
+      <PageHero
+        variant="minimal"
+        eyebrow="Fund releases"
+        title="What reached each county"
+        description="Treasury and programme releases for the OND El Niño window (demo). Open the map for the full story per county."
+      />
       <FundFlowPipeline compact />
       <ul className="grid gap-4 sm:grid-cols-2">
         {summaries.map((c) => (

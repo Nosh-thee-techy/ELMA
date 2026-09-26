@@ -30,8 +30,8 @@ function NavItem({
         horizontal ? "rounded-full px-3 py-2 text-sm" : "rounded-full px-4 py-2.5 text-sm",
         dark
           ? active
-            ? "bg-emerald-500 text-white shadow-sm"
-            : "text-white/90 hover:bg-white/10"
+            ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-950/40"
+            : "text-white/85 hover:bg-white/10"
           : active
             ? "bg-primary text-primary-foreground"
             : "text-foreground hover:bg-muted",

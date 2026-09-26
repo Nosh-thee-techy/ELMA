@@ -136,6 +136,7 @@ export type AuditEventKind =
   | "disbursal_verified"
   | "citizen_flag"
   | "report_created"
+  | "report_status_updated"
   | "field_media"
   | "sms_received";
 
