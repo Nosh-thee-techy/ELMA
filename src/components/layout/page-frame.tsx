@@ -1,5 +1,5 @@
 import { AudiencePanel } from "@/components/layout/audience-panel";
-import { audiencesForPage, metaForPath } from "@/lib/content/site";
+import { audiencesForPath, metaForPath } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
 
 type PageFrameProps = {
@@ -18,7 +18,7 @@ export function PageFrame({
   showIntro = false,
 }: PageFrameProps) {
   const meta = metaForPath(pathname);
-  const audiences = audiencesForPage(pathname);
+  const audiences = audiencesForPath(pathname);
 
   return (
     <div className={cn("flex flex-col gap-5", className)}>
@@ -28,9 +28,8 @@ export function PageFrame({
             What we are building
           </p>
           <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-muted-foreground">
-            {meta.building}
+            {meta.summary}
           </p>
-          <p className="mt-4 text-lg font-semibold text-foreground">{meta.summary}</p>
         </section>
       ) : null}
 

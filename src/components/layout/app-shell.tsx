@@ -3,7 +3,6 @@
 import { ElmaLogo } from "@/components/brand/elma-logo";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { PageTopBar } from "@/components/layout/page-top-bar";
-import { PublicCountySearch } from "@/components/layout/public-county-search";
 import { SiteNav } from "@/components/layout/site-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useLowBandwidth } from "@/components/providers/low-bandwidth-provider";
@@ -17,11 +16,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { SessionProfile } from "@/lib/auth/session";
-import {
-  resolveNavGroups,
-  roleNavLabel,
-  showCountySearchInHeader,
-} from "@/lib/content/nav-by-role";
+import { resolvePublicNavGroups, roleNavLabel } from "@/lib/content/nav-by-role";
+import { fieldAppNavLink } from "@/lib/content/site";
 import type { NavGroup } from "@/lib/content/site";
 import { cn } from "@/lib/utils";
 import { Menu, WifiOff } from "lucide-react";
@@ -47,24 +43,23 @@ export function AppShell({
     profile &&
     (profile.role === "RESPONDER" || profile.role === "ADMIN" || profile.role === "VERIFIER");
 
-  const navGroups: NavGroup[] = useMemo(
-    () => resolveNavGroups({ sessionActive, profile }),
-    [sessionActive, profile],
-  );
+  const navGroups: NavGroup[] = useMemo(() => resolvePublicNavGroups(), []);
 
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/responder/login")) {
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/responder/login") ||
+    pathname.startsWith("/login")
+  ) {
     return <>{children}</>;
   }
 
   const hidePageTitle =
     pathname === "/" ||
-    pathname === "/login" ||
-    pathname.startsWith("/counties") ||
-    pathname === "/releases" ||
-    pathname === "/tenders" ||
-    pathname === "/transparency" ||
+    pathname === "/explore" ||
+    pathname === "/app" ||
+    pathname === "/policy" ||
     pathname.startsWith("/channels");
-  const isMarketing = pathname === "/" || pathname === "/about";
+  const isMarketing = pathname === "/" || pathname === "/explore" || pathname === "/app";
 
   return (
     <div className="min-h-screen bg-background p-3 sm:p-4 lg:p-5">
@@ -134,9 +129,15 @@ export function AppShell({
           <SiteNav dark orientation="horizontal" groups={navGroups} className="hidden lg:flex" />
 
           <div className="hidden items-center gap-2 lg:flex lg:shrink-0 lg:justify-end">
-            {showCountySearchInHeader(profile) ? (
-              <PublicCountySearch className="hidden xl:block" />
-            ) : null}
+            <Link
+              href={fieldAppNavLink.href}
+              className={cn(
+                buttonVariants({ size: "sm", variant: "outline" }),
+                "h-10 rounded-full border-white/25 bg-white/10 font-bold text-white hover:bg-white/20",
+              )}
+            >
+              {fieldAppNavLink.label}
+            </Link>
             {isStaff && profile ? (
               <span className="hidden rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white lg:inline">
                 {roleNavLabel(profile)}

@@ -5,7 +5,7 @@ import { LogoutButton } from "@/components/layout/logout-button";
 import { SiteNav } from "@/components/layout/site-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import type { SessionProfile } from "@/lib/auth/session";
-import { dashboardFooterLinks, resolveNavGroups, roleNavLabel } from "@/lib/content/nav-by-role";
+import { dashboardFooterLinks, resolveAppNavGroups, roleNavLabel } from "@/lib/content/nav-by-role";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -16,11 +16,8 @@ export function DashboardShell({
   children: React.ReactNode;
   profile: SessionProfile | null;
 }) {
-  const navGroups = useMemo(
-    () => resolveNavGroups({ sessionActive: true, profile }),
-    [profile],
-  );
-  const footerLinks = profile ? dashboardFooterLinks(profile.role) : [];
+  const navGroups = useMemo(() => resolveAppNavGroups(profile), [profile]);
+  const footerLinks = profile ? dashboardFooterLinks() : [];
 
   return (
     <div className="min-h-screen bg-background">
